@@ -64,12 +64,16 @@ bool Dialog::rdDomains(QFile& fDomains)
 /// A parancs lista fájl minden sora két mezőből áll, a szeparátor a '|' karakter.
 /// Az üres ill. csak space-t tartalmazó sorok figyelmen kívül lsznek hagyva.
 /// Az első mezó a comboBoxban kiválaszható név, a második a hozzá tartozó parancs.
-/// Egy kitüntetett nevet a '!' kötelezü megadni, ez nem a comboBox-ban jelenik meg,
-/// Hanem az RDP parancsot definiálja, ahol a %1 a domain név, a %2 szerver név,
-/// %3 user név, és a %4 a jelszó. pl.:
+/// Két kitüntetett nevet a '!' és a '!!' kötelezü megadni, ezek nem a comboBox-ban jelenek meg.
+/// A '!' az RDP parancsot definiálja, ahol a %1 a domain név, a %2 szerver név,
+/// %3 user név, és a %4 a jelszó.
+/// A '!!' pedig a kikapcsoló parancsot, mely akkor kerül meghívásra, ha 5 percig nem történik semmi.
+/// A második mezőben megadba a '!!' stringet, az a '!!' után megadott paranccsal azonos parancsot jelent.
+/// pl.:
 /// @code
 /// !|/usr/bin/xfreerdp --ignore-certificate -f -z -a24 --plugin rdpsnd --plugin rdpdr --data disk:USB:/media/root -- -d %1 -u %3 -p %4 %2
-/// Terminál kikapcsolása|/usr/bin/sudo /sbin/poweroff
+/// !!|/usr/bin/sudo /sbin/poweroff
+////// Terminál kikapcsolása|!!
 /// Böngésző indítása|/usr/bin/chromium-browser
 /// @endcode
 bool Dialog::rdCommands(QFile& fCommands)
@@ -83,16 +87,25 @@ bool Dialog::rdCommands(QFile& fCommands)
         if (s.isEmpty()) continue;
         sl = s.split(QChar('|'));
         // Momentán 2 mezőre számítunk.
-        if (sl.size() != 2) return false;
+        if (sl.size() != 2 || sl.first().isEmpty() || sl[1].isEmpty()) return false;
         if (sl.first() == QString("!")) {   // Az RDP parancs (minta)
             rdpcmd = sl[1];
         }
+        else if (sl.first() == QString("!!")) {  // Kikapcsolás parancs
+            offcmd = sl[1];
+        }
         else {
             goNames << sl[0];
-            goCommands << sl[1];
+            QString c = sl[1];
+            if (c == QString("!!")) {
+                if (offcmd.isEmpty()) return false;
+                c = offcmd;
+            }
+            goCommands << c;
         }
     }
     if (rdpcmd.isEmpty()) return false;
+    if (offcmd.isEmpty()) return false;
     if (goNames.isEmpty()) {
         ui->goCB->setDisabled(true);
         ui->goPB->setDisabled(true);
@@ -101,6 +114,14 @@ bool Dialog::rdCommands(QFile& fCommands)
         ui->goCB->addItems(goNames);
     }
     return true;
+}
+
+void Dialog::idleTime(int cnt)
+{
+    ui->autoOffCnt->setText(QString::number(cnt));
+    if (cnt <= 0) {
+        command(offcmd);
+    }
 }
 
 void    Dialog::go()
@@ -133,6 +154,7 @@ void    Dialog::setdomain(int ix)
 
 void Dialog::command(const QString &cmd)
 {
+    DS << "Command : " << cmd << endl;
     if (QProcess::startDetached(cmd)) {
         exit(0);
     }

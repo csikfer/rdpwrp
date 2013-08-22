@@ -1,12 +1,42 @@
 #include "dialog.h"
-#include <QApplication>
+#include <stdio.h>
 
+QTextStream *pDS = NULL;
+
+QMyApplication::QMyApplication(int argc, char *argv[]) : QApplication(argc, argv), m_timer() {
+    pw = NULL;
+    idleCounter = IDLETIME;
+    m_timer.setInterval(1000);
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(oneSec()));
+    m_timer.start();
+}
+
+bool QMyApplication::notify ( QObject * receiver, QEvent * event )
+{
+    if (event->type() == QEvent::MouseMove || event->type() == QEvent::KeyPress) {
+        idleCounter = IDLETIME;
+    }
+    return QApplication::notify(receiver, event);
+}
+
+void QMyApplication::oneSec()
+{
+    if (pw != NULL) {
+        pw->idleTime(idleCounter--);
+    }
+}
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QMyApplication a(argc, argv);
 
-    Dialog w;
+#ifdef __DEBUG
+    pDS = new QTextStream(stderr, QIODevice::WriteOnly);
+#else
+    pDS = new QTextStream(fopen("/dev/null", "w"), QIODevice::WriteOnly);
+#endif
+
+    a.pw = new Dialog();
 
     QDir    home(QString("./.%1").arg(STR(APPNAME)));
 
@@ -22,7 +52,7 @@ int main(int argc, char *argv[])
         QMessageBox::critical(NULL, t, QObject::trUtf8("A tartomány lista fájl nem olvasható, vagy nem létezik.") + e);
         exit(1);
     }
-    if (!w.rdDomains(fDomains)) {
+    if (!a.pw->rdDomains(fDomains)) {
         QMessageBox::critical(NULL, t, QObject::trUtf8("A tartomány lista fájl nem értelmezhetó.") + e);
         exit(1);
     }
@@ -33,7 +63,7 @@ int main(int argc, char *argv[])
         QMessageBox::critical(NULL, t, QObject::trUtf8("A parancs lista fájl nem olvasható, vagy nem létezik.") + e);
         exit(1);
     }
-    if (!w.rdCommands(fCommands)) {
+    if (!a.pw->rdCommands(fCommands)) {
         QMessageBox::critical(NULL, t, QObject::trUtf8("A parancs lista fájl nem értelmezhetó.") + e);
         exit(1);
     }
@@ -45,13 +75,15 @@ int main(int argc, char *argv[])
         while (!(l = fStyles.readLine()).isEmpty()) {
             QString s = QString::fromUtf8(l).simplified();
             if (s.isEmpty()) continue;
-            w.setStyleSheet(s);
+            a.pw->setStyleSheet(s);
         }
         fStyles.close();
     }
 
-    w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-    w.showFullScreen();
+    a.pw->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    a.pw->showFullScreen();
     
-    return a.exec();
+    bool r = a.exec();
+    delete a.pw;
+    return r;
 }

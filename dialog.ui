@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>874</width>
-    <height>703</height>
+    <width>914</width>
+    <height>789</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -66,28 +66,28 @@
          <item row="0" column="0">
           <widget class="QLabel" name="languageL">
            <property name="text">
-            <string>Language</string>
+            <string>Nyelv</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="domainL">
            <property name="text">
-            <string>Domain</string>
+            <string>Tartomány</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="serverL">
            <property name="text">
-            <string>Server</string>
+            <string>Kiszolgáló</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="userL">
            <property name="text">
-            <string>User name</string>
+            <string>Felhasználó azonosító</string>
            </property>
           </widget>
          </item>
@@ -104,7 +104,7 @@
          <item row="4" column="0">
           <widget class="QLabel" name="passwordL">
            <property name="text">
-            <string>Password</string>
+            <string>Jelszó</string>
            </property>
           </widget>
          </item>
@@ -143,7 +143,7 @@
          <item>
           <widget class="QPushButton" name="logOnPB">
            <property name="text">
-            <string>LogOn</string>
+            <string>Belépés</string>
            </property>
           </widget>
          </item>
@@ -161,33 +161,12 @@
           </spacer>
          </item>
          <item>
-          <widget class="QComboBox" name="goCB">
-           <item>
-            <property name="text">
-             <string>Powero off</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Help</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Browswer</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Terminal</string>
-            </property>
-           </item>
-          </widget>
+          <widget class="QComboBox" name="goCB"/>
          </item>
          <item>
           <widget class="QPushButton" name="goPB">
            <property name="text">
-            <string>Go</string>
+            <string>O.K.</string>
            </property>
           </widget>
          </item>
@@ -222,6 +201,48 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="autoOffL">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Automatikus kikapcsolás </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="autoOffCnt">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>00</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>598</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
