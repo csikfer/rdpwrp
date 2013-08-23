@@ -2,29 +2,7 @@
 #include <stdio.h>
 
 QTextStream *pDS = NULL;
-
-QMyApplication::QMyApplication(int argc, char *argv[]) : QApplication(argc, argv), m_timer() {
-    pw = NULL;
-    idleCounter = IDLETIME;
-    m_timer.setInterval(1000);
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(oneSec()));
-    m_timer.start();
-}
-
-bool QMyApplication::notify ( QObject * receiver, QEvent * event )
-{
-    if (event->type() == QEvent::MouseMove || event->type() == QEvent::KeyPress) {
-        idleCounter = IDLETIME;
-    }
-    return QApplication::notify(receiver, event);
-}
-
-void QMyApplication::oneSec()
-{
-    if (pw != NULL) {
-        pw->idleTime(idleCounter--);
-    }
-}
+int idleTime = 0;
 
 int main(int argc, char *argv[])
 {
@@ -36,7 +14,7 @@ int main(int argc, char *argv[])
     pDS = new QTextStream(fopen("/dev/null", "w"), QIODevice::WriteOnly);
 #endif
 
-    a.pw = new Dialog();
+    Dialog w;
 
     QDir    home(QString("./.%1").arg(STR(APPNAME)));
 
@@ -52,7 +30,7 @@ int main(int argc, char *argv[])
         QMessageBox::critical(NULL, t, QObject::trUtf8("A tartomány lista fájl nem olvasható, vagy nem létezik.") + e);
         exit(1);
     }
-    if (!a.pw->rdDomains(fDomains)) {
+    if (!w.rdDomains(fDomains)) {
         QMessageBox::critical(NULL, t, QObject::trUtf8("A tartomány lista fájl nem értelmezhetó.") + e);
         exit(1);
     }
@@ -63,7 +41,7 @@ int main(int argc, char *argv[])
         QMessageBox::critical(NULL, t, QObject::trUtf8("A parancs lista fájl nem olvasható, vagy nem létezik.") + e);
         exit(1);
     }
-    if (!a.pw->rdCommands(fCommands)) {
+    if (!w.rdCommands(fCommands)) {
         QMessageBox::critical(NULL, t, QObject::trUtf8("A parancs lista fájl nem értelmezhetó.") + e);
         exit(1);
     }
@@ -75,15 +53,28 @@ int main(int argc, char *argv[])
         while (!(l = fStyles.readLine()).isEmpty()) {
             QString s = QString::fromUtf8(l).simplified();
             if (s.isEmpty()) continue;
-            a.pw->setStyleSheet(s);
+            w.setStyleSheet(s);
         }
         fStyles.close();
     }
 
-    a.pw->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-    a.pw->showFullScreen();
+    // w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    w.showFullScreen();
     
-    bool r = a.exec();
-    delete a.pw;
-    return r;
+    return a.exec();
 }
+
+QMyApplication::QMyApplication(int argc, char *argv[]) : QApplication(argc, argv)
+{
+    idleTime = 0;
+}
+
+bool QMyApplication::notify ( QObject * receiver, QEvent * event )
+{
+    if (event->type() == QEvent::MouseMove || event->type() == QEvent::KeyPress) {
+        idleTime = 0;
+    }
+    return QApplication::notify(receiver, event);
+}
+
+

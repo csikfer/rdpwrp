@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QTimer>
+#include <QProcess>
 
 
 #define APPNAME rdpwrp
@@ -18,41 +19,60 @@
 extern QTextStream *pDS;
 #define DS *pDS
 
+/// Ha nincs mozgás, akkor ennyi másodperc után kikapcsol
+#define IDLETIME        600
+/// A kikapcsolásra figyelmeztető ablak eddig aktív, aztán kikapcs
+#define IDLEDIALOGTIME   60
+/// Idle time counter
+extern int idleTime;
+/// Ha a hívott program futási ideje ennél rövidebb, akkor gyanús
+#define MINPRCTM         30
 
 namespace Ui {
 class Dialog;
 }
 
-class Dialog : public QDialog
+class Dialog : public QWidget
 {
     Q_OBJECT
-    
 public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
     bool rdDomains(QFile& fDomains);
     bool rdCommands(QFile& fCommands);
-    void idleTime(int cnt);
     
 private:
+    /// Egy parancs végrahajtása
     void command(const QString& cmd);
+    /// Kikapcsolásra figyelmeztetés
+    void idleTimeOut();
+    Ui::Dialog *ui;
     QStringList         domains;
     QList<QStringList>  servers;
     QString             rdpcmd;
     QString             offcmd;
     QStringList         goNames;
     QStringList         goCommands;
-    Ui::Dialog *ui;
+    QProcess          * pProc;
+    QString             procOut;
+    QString             lastCommand;
+    int                 procTime;
+    int                 timerId;
+protected:
+    void timerEvent(QTimerEvent *pTe);
 private slots:
     void    go();
     void    logOn();
-    void    changed(QString);
-    void    setdomain(int ix);
+    void    chgUsrOrPw(QString);
+    void    selDdomain(int ix);
+
+    void    procStated();
+    void    procReadyRead();
+    void    procError(QProcess::ProcessError e);
+    void    procFinished(int r);
 };
 
-// 5 perc
-#define IDLETIME 600
 class QMyApplication : public QApplication
 {
     Q_OBJECT
@@ -60,12 +80,7 @@ public:
     QMyApplication(int argc, char *argv[]);
 protected:
     bool notify ( QObject * receiver, QEvent * event );
-public:
-    QTimer  m_timer;
-    int idleCounter;
-    Dialog *pw;
-public slots:
-    void oneSec();
 };
+
 
 #endif // DIALOG_H

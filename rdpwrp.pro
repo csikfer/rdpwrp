@@ -13,8 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        dialog.cpp
+        dialog.cpp \
+    idletimeout.cpp
 
-HEADERS  += dialog.h
+HEADERS  += dialog.h \
+    idletimeout.h
 
-FORMS    += dialog.ui
+FORMS    += dialog.ui \
+    idletimeout.ui
