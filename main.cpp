@@ -15,10 +15,17 @@ int main(int argc, char *argv[])
 
     sSugg = QObject::trUtf8(" Forduljon a rendszergazdához!");
     sCrit = QObject::trUtf8("Végzetes hiba!");
-    const char * hn = getenv("HOSTNAME");
-    hostname = hn == NULL ? "UNKNOWN" : hn;
     desktopHeiht = QApplication::desktop()->height();
     desktopWidth = QApplication::desktop()->width();
+    {
+        QFile   fhn("/etc/hostname");
+        if (fhn.open(QIODevice::ReadOnly)) {
+            hostname = fhn.readAll();
+        }
+        else {
+            hostname = QObject::trUtf8("Ismeretlen");
+        }
+    }
 #ifdef __DEBUG
     pDS = new QTextStream(stderr, QIODevice::WriteOnly);
 #else

@@ -20,7 +20,7 @@ extern QTextStream *pDS;
 #define DS *pDS
 
 /// Ha nincs mozgás, akkor ennyi másodperc után kikapcsol
-#define IDLETIME        66
+#define IDLETIME        300
 /// A kikapcsolásra figyelmeztető ablak eddig aktív, aztán kikapcs
 #define IDLEDIALOGTIME   60
 /// Idle time counter
