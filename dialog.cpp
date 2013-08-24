@@ -15,6 +15,7 @@ Dialog::Dialog(QWidget *parent) :
     pProc = NULL;
     ui->setupUi(this);
     ui->logOnPB->setDisabled(true);
+    ui->clientNameL->setText(hostname);
     connect(ui->logOnPB,    SIGNAL(clicked()),            this, SLOT(logOn()));
     connect(ui->goPB,       SIGNAL(clicked()),            this, SLOT(go()));
     connect(ui->userLE,     SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
@@ -41,7 +42,7 @@ void Dialog::timerEvent(QTimerEvent * pTe)
     // Ha nem fut parancs / nem vagyunk háttérben, mérjuk a tétlenségi időt
     if (pProc == NULL || pProc->state() == QProcess::NotRunning) {
         ui->autoOffCnt->setText(QString::number(IDLETIME - idleTime));
-        if (IDLETIME <= idleTime) {
+        if ((IDLETIME - IDLEDIALOGTIME) <= idleTime) {
             idleTimeOut();
         }
         ++idleTime;

@@ -3,10 +3,18 @@
 
 QTextStream *pDS = NULL;
 int idleTime = 0;
+QString sSugg;
+QString sCrit;
+QString hostname;
 
 int main(int argc, char *argv[])
 {
     QMyApplication a(argc, argv);
+
+    sSugg = QObject::trUtf8(" Forduljon a rendszergazdához!");
+    sCrit = QObject::trUtf8("Végzetes hiba!");
+    const char * hn = getenv("HOSTNAME");
+    hostname = hn == NULL ? "UNKNOWN" : hn;
 
 #ifdef __DEBUG
     pDS = new QTextStream(stderr, QIODevice::WriteOnly);
@@ -18,31 +26,28 @@ int main(int argc, char *argv[])
 
     QDir    home(QString("./.%1").arg(STR(APPNAME)));
 
-    QString e = QObject::trUtf8(" Forduljon a rendszergazdához!");
-    QString t = QObject::trUtf8("Végzetes hiba!");
-
     if (!home.isReadable()) {
-        QMessageBox::critical(NULL, t, QObject::trUtf8("A konfigurációs mappa nem olvasható, vagy nem létezik.") + e);
+        QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A konfigurációs mappa nem olvasható, vagy nem létezik.") + sSugg);
         exit(1);
     }
     QFile   fDomains(home.filePath("domains"));
     if (!fDomains.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(NULL, t, QObject::trUtf8("A tartomány lista fájl nem olvasható, vagy nem létezik.") + e);
+        QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A tartomány lista fájl nem olvasható, vagy nem létezik.") + sSugg);
         exit(1);
     }
     if (!w.rdDomains(fDomains)) {
-        QMessageBox::critical(NULL, t, QObject::trUtf8("A tartomány lista fájl nem értelmezhetó.") + e);
+        QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A tartomány lista fájl nem értelmezhetó.") + sSugg);
         exit(1);
     }
     fDomains.close();
 
     QFile   fCommands(home.filePath("commands"));
     if (!fCommands.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(NULL, t, QObject::trUtf8("A parancs lista fájl nem olvasható, vagy nem létezik.") + e);
+        QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A parancs lista fájl nem olvasható, vagy nem létezik.") + sSugg);
         exit(1);
     }
     if (!w.rdCommands(fCommands)) {
-        QMessageBox::critical(NULL, t, QObject::trUtf8("A parancs lista fájl nem értelmezhetó.") + e);
+        QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A parancs lista fájl nem értelmezhetó.") + sSugg);
         exit(1);
     }
     fCommands.close();
@@ -58,7 +63,7 @@ int main(int argc, char *argv[])
         fStyles.close();
     }
 
-    // w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
     w.showFullScreen();
     
     return a.exec();

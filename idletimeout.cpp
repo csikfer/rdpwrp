@@ -8,8 +8,9 @@ cIdleTimeOut::cIdleTimeOut(QWidget *parent) :
     ui(new Ui::idleTimeOut)
 {
     ui->setupUi(this);
+    setStyleSheet("background-color: yellow");
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(trUtf8("Ne!"));
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Kikapcsolás!"));
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(trUtf8("Kikapcsolás!"));
     timerId = startTimer(1000);
     downCnt = IDLEDIALOGTIME;
     ui->lcdNumber->display(downCnt);
@@ -25,7 +26,9 @@ cIdleTimeOut::~cIdleTimeOut()
 void cIdleTimeOut::timerEvent(QTimerEvent *)
 {
     ++idleTime;
-    if (idleTime >= IDLEDIALOGTIME) reject();
-    ui->lcdNumber->display(IDLEDIALOGTIME - idleTime);
+    if (idleTime >= IDLEDIALOGTIME) accept();
+    int i = IDLEDIALOGTIME - idleTime;
+    setStyleSheet(QString("background-color: rgb(255,%1,0)").arg((255 * i) / IDLEDIALOGTIME));
+    ui->lcdNumber->display(i);
 }
 

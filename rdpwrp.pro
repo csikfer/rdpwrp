@@ -21,3 +21,6 @@ HEADERS  += dialog.h \
 
 FORMS    += dialog.ui \
     idletimeout.ui
+
+RESOURCES += \
+    rdpwrp.qrc

@@ -32,6 +32,45 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="leftL">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="rdpwrp.qrc">:/mages/logo.png</pixmap>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>355</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="rightL">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="rdpwrp.qrc">:/mages/ltsp.png</pixmap>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -148,6 +187,16 @@
            <property name="text">
             <string>Belépés</string>
            </property>
+           <property name="icon">
+            <iconset resource="rdpwrp.qrc">
+             <normaloff>:/mages/arrw01_05a.gif</normaloff>:/mages/arrw01_05a.gif</iconset>
+           </property>
+           <property name="autoDefault">
+            <bool>true</bool>
+           </property>
+           <property name="default">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item>
@@ -169,7 +218,11 @@
          <item>
           <widget class="QPushButton" name="goPB">
            <property name="text">
-            <string>O.K.</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="rdpwrp.qrc">
+             <normaloff>:/mages/arrw01_01a.gif</normaloff>:/mages/arrw01_01a.gif</iconset>
            </property>
           </widget>
          </item>
@@ -232,6 +285,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>másodperc múéva.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_4">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -244,12 +307,21 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QLabel" name="clientNameL">
+        <property name="text">
+         <string>ClientName</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="rdpwrp.qrc"/>
+ </resources>
  <connections/>
 </ui>

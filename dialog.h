@@ -20,13 +20,17 @@ extern QTextStream *pDS;
 #define DS *pDS
 
 /// Ha nincs mozgás, akkor ennyi másodperc után kikapcsol
-#define IDLETIME        600
+#define IDLETIME        66
 /// A kikapcsolásra figyelmeztető ablak eddig aktív, aztán kikapcs
 #define IDLEDIALOGTIME   60
 /// Idle time counter
 extern int idleTime;
 /// Ha a hívott program futási ideje ennél rövidebb, akkor gyanús
-#define MINPRCTM         30
+#define MINPRCTM         10
+
+extern QString sSugg;
+extern QString sCrit;
+extern QString hostname;
 
 namespace Ui {
 class Dialog;
