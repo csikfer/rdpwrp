@@ -320,6 +320,16 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>languageCB</tabstop>
+  <tabstop>domainCB</tabstop>
+  <tabstop>serverCB</tabstop>
+  <tabstop>userLE</tabstop>
+  <tabstop>passwordLE</tabstop>
+  <tabstop>logOnPB</tabstop>
+  <tabstop>goCB</tabstop>
+  <tabstop>goPB</tabstop>
+ </tabstops>
  <resources>
   <include location="rdpwrp.qrc"/>
  </resources>
