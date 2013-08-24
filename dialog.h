@@ -31,6 +31,8 @@ extern int idleTime;
 extern QString sSugg;
 extern QString sCrit;
 extern QString hostname;
+extern int     desktopHeiht, desktopWidth;
+
 
 namespace Ui {
 class Dialog;
@@ -51,6 +53,7 @@ private:
     void command(const QString& cmd);
     /// Kikapcsolásra figyelmeztetés
     void idleTimeOut();
+    void message(const QString& _t, const QString& _m);
     Ui::Dialog *ui;
     QStringList         domains;
     QList<QStringList>  servers;

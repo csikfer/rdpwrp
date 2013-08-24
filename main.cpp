@@ -1,11 +1,13 @@
 #include "dialog.h"
 #include <stdio.h>
+#include <QDesktopWidget>
 
 QTextStream *pDS = NULL;
 int idleTime = 0;
 QString sSugg;
 QString sCrit;
 QString hostname;
+int     desktopHeiht, desktopWidth;
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +17,8 @@ int main(int argc, char *argv[])
     sCrit = QObject::trUtf8("Végzetes hiba!");
     const char * hn = getenv("HOSTNAME");
     hostname = hn == NULL ? "UNKNOWN" : hn;
-
+    desktopHeiht = QApplication::desktop()->height();
+    desktopWidth = QApplication::desktop()->width();
 #ifdef __DEBUG
     pDS = new QTextStream(stderr, QIODevice::WriteOnly);
 #else

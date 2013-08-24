@@ -1,6 +1,8 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "idletimeout.h"
+#include <QTextEdit>
+#include <QDialogButtonBox>
 
 Dialog::Dialog(QWidget *parent) :
     QWidget(parent),
@@ -248,7 +250,7 @@ void    Dialog::procError(QProcess::ProcessError e)
         msg += trUtf8("<h2>A program kimenete:</h2>\n");
         msg += procOut + "\n";
     }
-    QMessageBox::warning(this, trUtf8("Hiba"), msg);
+    message(trUtf8("Hiba"), msg);
 }
 
 void    Dialog::procFinished(int r)
@@ -267,8 +269,30 @@ void    Dialog::procFinished(int r)
             msg += trUtf8("<h2>A program kimenete:</h2>\n");
             msg += procOut + "\n";
         }
-        QMessageBox::warning(this, trUtf8("Figyelmeztetés"), msg);
+        message(trUtf8("Figyelmeztetés"), msg);
     }
+}
+
+void Dialog::message(const QString& _t, const QString& _m)
+{
+    QDialog *m = new QDialog(this);
+    m->setWindowTitle(_t);
+    QVBoxLayout *l = new QVBoxLayout(m);
+    // m->setLayout(l);
+    QTextEdit *t = new QTextEdit(m);
+    t->setReadOnly(true);
+    t->setText(_m);
+    l->addWidget(t);
+    QDialogButtonBox *b = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, m);
+    l->addWidget(b);
+    connect(b, SIGNAL(accepted()), m, SLOT(accept()));
+    int x = desktopWidth/6;
+    int y = desktopHeiht/6;
+    int w = (desktopWidth*2)/3;
+    int h = (desktopWidth*2)/3;
+    m->setGeometry(x, y, w, h);
+    m->exec();
+    delete m;
 }
 
 void Dialog::idleTimeOut()
