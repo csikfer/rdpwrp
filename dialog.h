@@ -4,10 +4,13 @@
 #include <QApplication>
 #include <QDialog>
 #include <QDir>
-#include <QMessageBox>
+#include <QTextEdit>
+#include <QDialogButtonBox>
+#include <QLayout>
 #include <QTextStream>
 #include <QTimer>
 #include <QProcess>
+#include <QMessageBox>
 
 
 #define APPNAME rdpwrp
@@ -78,6 +81,20 @@ private slots:
     void    procReadyRead();
     void    procError(QProcess::ProcessError e);
     void    procFinished(int r);
+};
+
+class msgBox : public QDialog
+{
+public:
+    msgBox(QWidget *p);
+    void setText(const QString& _t) { text->setText(_t); }
+protected:
+    void    timerEvent(QTimerEvent *);
+private:
+    QVBoxLayout      *layout;
+    QTextEdit        *text;
+    QDialogButtonBox *buttons;
+    int               timer;
 };
 
 class QMyApplication : public QApplication
