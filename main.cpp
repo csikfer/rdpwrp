@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
 
     QFile    fconf(QString("./.%1.conf").arg(STR(APPNAME)));
 
-
     if (!fconf.open(QIODevice::ReadOnly)) {
         QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A konfigurációs fájl nem olvasható, vagy nem létezik.") + sSugg);
         exit(1);

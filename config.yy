@@ -39,7 +39,7 @@ static QChar yyget()
     if (yyUnGetChars.size() > 0) return yyUnGetChars.pop();
     while (yyLine.isEmpty()) {
         ++yyLineNo;
-        yyLastLine = yyLine  = yyFile->readLine();
+        yyLastLine = yyLine  = QString::fromUtf8(yyFile->readLine());
         if (yyLine.isEmpty() && yyFile->atEnd()) return 0;
     }
     QChar c = yyLine.at(0);
