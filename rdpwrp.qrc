@@ -1,8 +1,11 @@
 <RCC>
-    <qresource prefix="/mages">
-        <file>logo.png</file>
-        <file>ltsp.png</file>
-        <file>arrw01_01a.gif</file>
-        <file>arrw01_05a.gif</file>
+    <qresource prefix="/">
+        <file>images/app.ico</file>
+        <file>images/help.ico</file>
+        <file>images/logo.png</file>
+        <file>images/ltsp.png</file>
+        <file>images/off.ico</file>
+        <file>images/web.ico</file>
+        <file>images/windows.png</file>
     </qresource>
 </RCC>

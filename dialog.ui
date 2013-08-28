@@ -25,10 +25,13 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string/>
+   <string notr="true"/>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton { Text-align:left; }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -40,7 +43,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="rdpwrp.qrc">:/mages/logo.png</pixmap>
+         <pixmap resource="rdpwrp.qrc">:/images/logo.png</pixmap>
         </property>
        </widget>
       </item>
@@ -63,7 +66,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="rdpwrp.qrc">:/mages/ltsp.png</pixmap>
+         <pixmap resource="rdpwrp.qrc">:/images/ltsp.png</pixmap>
         </property>
        </widget>
       </item>
@@ -185,11 +188,20 @@
          <item>
           <widget class="QPushButton" name="logOnPB">
            <property name="text">
-            <string>Belépés</string>
+            <string>Belépés a terminál szerverre</string>
            </property>
            <property name="icon">
             <iconset resource="rdpwrp.qrc">
-             <normaloff>:/mages/arrw01_05a.gif</normaloff>:/mages/arrw01_05a.gif</iconset>
+             <normaloff>:/images/windows.png</normaloff>:/images/windows.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
            </property>
            <property name="autoDefault">
             <bool>true</bool>
@@ -197,34 +209,97 @@
            <property name="default">
             <bool>true</bool>
            </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="minimumSize">
+        <size>
+         <width>20</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QComboBox" name="goCB"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="goPB">
+          <widget class="QPushButton" name="offPB">
            <property name="text">
-            <string/>
+            <string>Kikapcsol</string>
            </property>
            <property name="icon">
             <iconset resource="rdpwrp.qrc">
-             <normaloff>:/mages/arrw01_01a.gif</normaloff>:/mages/arrw01_01a.gif</iconset>
+             <normaloff>:/images/off.ico</normaloff>:/images/off.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="helpPB">
+           <property name="text">
+            <string>Segítség</string>
+           </property>
+           <property name="icon">
+            <iconset resource="rdpwrp.qrc">
+             <normaloff>:/images/help.ico</normaloff>:/images/help.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="buttomLayout"/>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -327,8 +402,6 @@
   <tabstop>userLE</tabstop>
   <tabstop>passwordLE</tabstop>
   <tabstop>logOnPB</tabstop>
-  <tabstop>goCB</tabstop>
-  <tabstop>goPB</tabstop>
  </tabstops>
  <resources>
   <include location="rdpwrp.qrc"/>

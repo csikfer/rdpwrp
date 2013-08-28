@@ -2,14 +2,23 @@
 #include "ui_dialog.h"
 #include "idletimeout.h"
 
+int idleTime        = IDLETIME;
+int idleDialogTime  = IDLEDIALOGTIME;
+int minProgTime     = MINPRCTM;
+
+Dialog * Dialog::pItem = NULL;
+
 Dialog::Dialog(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Dialog),
-    domains(), servers(), rdpcmd(), offcmd(), goNames(), goCommands(),
+    domains(), servers(), rdpcmd(), offcmd(), hlpcmd(),
+    goNames(), goCommands(), goIcons(), goTimes(),
     procOut(), lastCommand()
 {
+    pItem = this;
+    pButtonGroup = NULL;
     DS << __PRETTY_FUNCTION__ << endl;
-    idleTime = 0;
+    idleTimeCnt = 0;
     procTime = 0;
     timerId  = -1;
     pProc = NULL;
@@ -17,20 +26,48 @@ Dialog::Dialog(QWidget *parent) :
     ui->logOnPB->setDisabled(true);
     ui->clientNameL->setText(hostname);
     connect(ui->logOnPB,    SIGNAL(clicked()),            this, SLOT(logOn()));
-    connect(ui->goPB,       SIGNAL(clicked()),            this, SLOT(go()));
+    connect(ui->helpPB,     SIGNAL(clicked()),            this, SLOT(help()));
+    connect(ui->offPB,      SIGNAL(clicked()),            this, SLOT(off()));
     connect(ui->userLE,     SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
     connect(ui->passwordLE, SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
-    connect(ui->domainCB,   SIGNAL(currentIndexChanged(int)),this,SLOT(selDdomain(int)));
+    connect(ui->domainCB,   SIGNAL(currentIndexChanged(int)),this,SLOT(selDomain(int)));
 
     timerId = startTimer(1000);
 }
 
 Dialog::~Dialog()
 {
+    pItem = NULL;
     DS << __PRETTY_FUNCTION__ << endl;
     killTimer(timerId);
     if (pProc != NULL) delete pProc;
     delete ui;
+}
+
+void Dialog::set()
+{
+    ui->domainCB->clear();
+    ui->domainCB->addItems(domains);
+    ui->serverCB->clear();
+    ui->serverCB->addItems(servers.first());
+    int n = goCommands.size();
+    if (n > 0) {
+        QVBoxLayout *pLayout = ui->buttomLayout;
+        pButtonGroup = new QButtonGroup(this);
+        QFrame *pLine = new QFrame(this);
+        pLine->setFrameShape(QFrame::HLine);
+        pLayout->addWidget(pLine);
+        for (int i = 0; i < n; ++i) {
+            QPushButton *pPB = new QPushButton(this);
+            pPB->setText(goNames[i]);
+            pPB->setIcon(QIcon(goIcons[i]));
+            pPB->setIconSize(QSize(32,32));
+            pLayout->addWidget(pPB);
+            pButtonGroup->addButton(pPB, i);
+        }
+        connect(pButtonGroup, SIGNAL(buttonReleased(int)), this, SLOT(go(int)));
+    }
+
 }
 
 void Dialog::timerEvent(QTimerEvent * pTe)
@@ -41,125 +78,25 @@ void Dialog::timerEvent(QTimerEvent * pTe)
     }
     // Ha nem fut parancs / nem vagyunk háttérben, mérjuk a tétlenségi időt
     if (pProc == NULL || pProc->state() == QProcess::NotRunning) {
-        ui->autoOffCnt->setText(QString::number(IDLETIME - idleTime));
-        if ((IDLETIME - IDLEDIALOGTIME) <= idleTime) {
+        ui->autoOffCnt->setText(QString::number(IDLETIME - idleTimeCnt));
+        if ((IDLETIME - IDLEDIALOGTIME) <= idleTimeCnt) {
             idleTimeOut();
         }
-        ++idleTime;
+        ++idleTimeCnt;
         procTime = 0;
     }
     // Ha fut egy parancs, akkor annak a futási idejét mérjük
     else {
         ++procTime;
-        idleTime = 0;
+        idleTimeCnt = 0;
     }
 }
 
-/// A domain-eket és a hívható terminálszervereket felsoroló fájl felolvasáas
-/// A fájlban az ü#include <QProcess>res, vagy csak space karaktereket tartalmazó sorok figyelmen kívül lesznek hagyva.
-/// A domain név bevezető space karakterek nélkül adandó meg, és ezt követik a szerver nevek (legalább egy)
-/// melyek esetén a sor mindíg egy space kerekterrel kezdődik. Pl.:
-/// @code
-/// domain1
-///     server1.domain1
-///     server2.domain2
-/// domain2
-///     server1.domain2
-/// @endcode
-bool Dialog::rdDomains(QFile& fDomains)
-{
-    DS << __PRETTY_FUNCTION__ << endl;
-    QByteArray l;
-    QString s;
-    while ((l = fDomains.readLine()).size() > 0) {
-        s = QString::fromUtf8(l);
-        if (s.simplified().isEmpty()) continue;
-        if (s[0].isSpace()) {   // Szerver a domain-ban (első karakter egy space, tab stb.)
-            // Hi nincs még domain, akkor az gáz
-            if (domains.isEmpty()) return false;
-            servers.last() << s.simplified();
-        }
-        // Domain megadása (a domain neve a sor eleján kezdődik
-        else {
-            // Ha az előző domain-hez nincs megadva szerver az nem jó
-            if ((!domains.isEmpty()) && servers.last().isEmpty()) return false;
-            domains << s.simplified();  // Domain a listába
-            servers << QStringList();   // Az egyenlőre öres szerver lista a domain-hez
-        }
-    }
-    if (domains.isEmpty() || servers.size() != domains.size() || servers.last().isEmpty()) {
-        return false;
-    }
-    ui->domainCB->addItems(domains);
-    ui->serverCB->addItems(servers.first());
-    return true;
-}
-/// A hívható parancsokat definiáló fájl felhome.filePath("commands")dolgozása
-/// A parancs lista fájl minden sora két mezőből áll, a szeparátor a '|' karakter.
-/// Az üres ill. csak space-t tartalmazó sorok figyelmen kívül lsznek hagyva.
-/// Az első mezó a comboBoxban kiválaszható név, a második a hozzá tartozó parancs.
-/// Két kitüntetett nevet a '!' és a '!!' kötelezü megadni, ezek nem a comboBox-ban jelenek meg.
-/// A '!' az RDP parancsot definiálja, ahol a %1 a domain név, a %2 szerver név,
-/// %3 user név, és a %4 a jelszó.
-/// A '!!' pedig a kikapcsoló parancsot, mely akkor kerül meghívásra, ha 5 percig nem történik semmi.
-/// A második mezőben megadba a '!!' stringet, az a '!!' után megadott paranccsal azonos parancsot jelent.
-/// pl.:
-/// @code
-/// !|/usr/bin/xfreerdp --ignore-certificate -f -z -a24 --plugin rdpsnd --plugin rdpdr --data disk:USB:/media/root -- -d %1 -u %3 -p %4 %2
-/// !!|/usr/bin/sudo /sbin/poweroff
-////// Terminál kikapcsolása|!!
-/// Böngésző indítása|/usr/bin/chromium-browser
-/// @endcode
-bool Dialog::rdCommands(QFile& fCommands)
-{
-    DS << __PRETTY_FUNCTION__ << endl;
-    QByteArray  l;
-    QString     s;
-    QStringList sl;
-    while ((l = fCommands.readLine()).size() > 0) {
-        s = QString::fromUtf8(l);
-        s = s.simplified();
-        if (s.isEmpty()) continue;
-        sl = s.split(QChar('|'));
-        // 2 db nem üres mezőre számítunk.
-        if (sl.size() != 2 || sl.first().isEmpty() || sl[1].isEmpty()) return false;
-        if (sl.first() == QString("!")) {   // Az RDP parancs (minta)
-            rdpcmd = sl[1];
-        }
-        else if (sl.first() == QString("!!")) {  // Kikapcsolás parancs
-            offcmd = sl[1];
-        }
-        else {
-            goNames << sl[0];
-            QString c = sl[1];
-            if (c == QString("!!")) {
-                if (offcmd.isEmpty()) return false;
-                c = offcmd;
-            }
-            goCommands << c;
-        }
-    }
-    // A kötelező parancsok megadva?
-    if (rdpcmd.isEmpty()) return false;
-    if (offcmd.isEmpty()) return false;
-    // Ha nincs parancs lista, akkor letiltjuk a hozzátartozó elemeket
-    if (goNames.isEmpty()) {
-        ui->goCB->setDisabled(true);
-        ui->goPB->setDisabled(true);
-    }
-    // megadjuk a hivható parancsok név listáját
-    else {
-        ui->goCB->addItems(goNames);
-    }
-    return true;
-}
 
-void    Dialog::go()
+void    Dialog::help()
 {
-    DS << __PRETTY_FUNCTION__ << endl;
-    int i = ui->goCB->currentIndex();
-    command(goCommands[i]);
-    idleTime = 0;
+    command(hlpcmd);
+    idleTimeCnt = 0;
 }
 
 void    Dialog::logOn()
@@ -174,13 +111,23 @@ void    Dialog::logOn()
     command(cmd);
 }
 
+void    Dialog::off()
+{
+    command(offcmd);
+}
+
+void    Dialog::go(int id)
+{
+    command(goCommands[id]);
+}
+
 void    Dialog::chgUsrOrPw(QString)
 {
     DS << __PRETTY_FUNCTION__ << endl;
     ui->logOnPB->setDisabled(ui->userLE->text().isEmpty() || ui->passwordLE->text().isEmpty());
 }
 
-void    Dialog::selDdomain(int ix)
+void    Dialog::selDomain(int ix)
 {
     DS << __PRETTY_FUNCTION__ << endl;
     ui->serverCB->clear();
@@ -188,7 +135,7 @@ void    Dialog::selDdomain(int ix)
     ui->serverCB->setCurrentIndex(0);
 }
 
-void Dialog::command(const QString &cmd)
+void Dialog::command(const QString &cmd, int minTm)
 {
     DS << "Command : " << cmd << endl;
     if (pProc != NULL) {
@@ -205,6 +152,7 @@ void Dialog::command(const QString &cmd)
         connect(pProc, SIGNAL(finished(int)),                   this, SLOT(procFinished(int)));
         connect(pProc, SIGNAL(started()),                       this, SLOT(procStated()));
     }
+    actMinProgTime = minTm;
     procOut.clear();
     procTime = 0;
     pProc->start(cmd, QIODevice::ReadOnly);
@@ -256,7 +204,7 @@ void    Dialog::procFinished(int r)
     DS << __PRETTY_FUNCTION__ << endl;
     showFullScreen();
 
-    if (procTime < MINPRCTM) {  // Túl hamar kilépett
+    if (procTime < actMinProgTime) {  // Túl hamar kilépett
         QString msg;
         msg  = trUtf8("<h1>A parancs futási ideje gyanús. Hiba történt?</h1>\n");
         msg += trUtf8("<h2>Kilépési kód : %1").arg(r);
@@ -284,10 +232,10 @@ void Dialog::idleTimeOut()
 {
     cIdleTimeOut    d(this);
     if (d.exec() == QDialog::Rejected) {
-        idleTime = 0;
+        idleTimeCnt = 0;
         return;
     }
-    command(offcmd);
+    off();
     // exit(1); // csak elfedi, ha hiba van
 }
 
@@ -313,3 +261,4 @@ void    msgBox::timerEvent(QTimerEvent *)
 {
     accept();
 }
+

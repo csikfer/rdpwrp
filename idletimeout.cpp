@@ -25,9 +25,9 @@ cIdleTimeOut::~cIdleTimeOut()
 
 void cIdleTimeOut::timerEvent(QTimerEvent *)
 {
-    ++idleTime;
-    if (idleTime >= IDLEDIALOGTIME) accept();
-    int i = IDLEDIALOGTIME - idleTime;
+    ++idleTimeCnt;
+    if (idleTimeCnt >= IDLEDIALOGTIME) accept();
+    int i = IDLEDIALOGTIME - idleTimeCnt;
     setStyleSheet(QString("background-color: rgb(255,%1,0)").arg((255 * i) / IDLEDIALOGTIME));
     ui->lcdNumber->display(i);
 }
