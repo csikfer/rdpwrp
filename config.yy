@@ -64,7 +64,7 @@ static int yylex(void);
 }
 
 %token      DOMAIN_T RDP_T OFF_T HELP_T COMMAND_T APP_T
-%token      IDLE_T DIALOG_T TIME_T MIN_T RUN_T WEB_T
+%token      IDLE_T DIALOG_T TIME_T MIN_T RUN_T WEB_T KIOSK_T
 
 %token <i>  INTEGER_V
 %token <s>  STRING_V NAME_V
@@ -88,6 +88,7 @@ config  : DOMAIN_T str '{' strs '}'         { Dialog::addDomain($2, $4); }
         | IDLE_T DIALOG_T TIME_T int ';'    { idleDialogTime  = $4; }
         | MIN_T RUN_T TIME_T int ';'        { minProgTime = $4; }
         | COMMAND_T str cmd icon int_z ';'  { Dialog::addCommand($2, $3, $4, $5); }
+        | KIOSK_T ';'                       { isKiosk = true; }
         ;
 str     : NAME_V        { $$ = $1; }
         | STRING_V      { $$ = $1; }
@@ -180,7 +181,7 @@ static int yylex(void)
         int         value;
     } sToken[] = {
         TOK(DOMAIN) TOK(RDP) TOK(OFF) TOK(HELP) TOK(COMMAND) TOK(APP)
-        TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB)
+        TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB) TOK(KIOSK)
         { NULL, 0 }
     };
     bool ok;

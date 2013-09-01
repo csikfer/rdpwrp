@@ -7,6 +7,7 @@ int idleTimeCnt = 0;
 QString sSugg;
 QString sCrit;
 QString hostname;
+bool    isKiosk = false;
 int     desktopHeiht, desktopWidth;
 
 int main(int argc, char *argv[])
@@ -28,6 +29,15 @@ int main(int argc, char *argv[])
     }
 #ifdef __DEBUG
     pDS = new QTextStream(stderr, QIODevice::WriteOnly);
+    // TEST
+    QString arg1;
+    if (argc > 1) arg1 = argv[1];
+    if (arg1 == QString("get-idle")) {
+        int test = getIdleTime();
+        DS << "idle time : " << test << endl;
+        exit(0);
+    }
+    // END TEST
 #else
     pDS = new QTextStream(fopen("/dev/null", "w"), QIODevice::WriteOnly);
 #endif
@@ -62,6 +72,8 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
+/* ***************************************************************** */
+
 QMyApplication::QMyApplication(int argc, char *argv[]) : QApplication(argc, argv)
 {
     idleTimeCnt = 0;
@@ -75,4 +87,37 @@ bool QMyApplication::notify ( QObject * receiver, QEvent * event )
     return QApplication::notify(receiver, event);
 }
 
+/* ***************************************************************** */
 
+msgBox::msgBox(QWidget *p) : QDialog(p)
+{
+    layout = new QVBoxLayout(this);
+    // setLayout(layout);
+    text = new QTextEdit(this);
+    text->setReadOnly(true);
+    layout->addWidget(text);
+    buttons = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, this);
+    layout->addWidget(buttons);
+    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+    int x = desktopWidth/6;
+    int y = desktopHeiht/6;
+    int w = (desktopWidth*2)/3;
+    int h = (desktopHeiht*2)/3;
+    setGeometry(x, y, w, h);
+    timer = startTimer(300 * 1000);  // 5 perc mulva automatikusan becsukódik
+}
+
+void    msgBox::timerEvent(QTimerEvent *)
+{
+    accept();
+}
+
+void message(const QString& _t, const QString& _m)
+{
+    Dialog *p = Dialog::pItem;
+    msgBox *m = new msgBox(p);
+    m->setWindowTitle(_t);
+    m->setText(_m);
+    m->exec();
+    delete m;
+}

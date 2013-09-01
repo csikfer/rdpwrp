@@ -28,10 +28,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         dialog.cpp \
-    idletimeout.cpp
+    idletimeout.cpp \
+    idletime.cpp
 
 HEADERS  += dialog.h \
-    idletimeout.h
+    idletimeout.h \
+    main.h
 
 FORMS    += dialog.ui \
     idletimeout.ui
