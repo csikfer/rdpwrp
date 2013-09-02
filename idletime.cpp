@@ -45,7 +45,9 @@ static int xprintidle(QString cmd = QString(), bool __ex = true)
         message(sCrit, msg);
         return -1;
     }
+    it /= 1000;   // ms => s
     if (!it) it = 0;    // a nulla is hibát jelez
+    DS << __PRETTY_FUNCTION__ << " return : " << it << endl;
     return it;
 }
 
@@ -65,6 +67,7 @@ static int getDisplay()
         message(sCrit, QObject::trUtf8("A DISPLAY környezeti vátozó értéke nem értelmezhető : \"%1\"").arg(pe) + sSugg);
         return -1;
     }
+    DS << __PRETTY_FUNCTION__ << " return : " << i << endl;
     return i;
 }
 
@@ -102,6 +105,7 @@ static QList<int> otherDisplays(int myDisplay, bool& ok)
 /// @param Ha a lekérdezés részeredménye kisebb mint _min, akkor azonnal visszatér a részeredménnyel.
 int getIdleTime(int _min)
 {
+    DS << __PRETTY_FUNCTION__ << " _min : " << _min << endl;
     QDateTime   now = QDateTime::currentDateTime();
     bool ok;
     // Virtuális konzolokon mért idők
@@ -117,13 +121,19 @@ int getIdleTime(int _min)
     QFileInfoList fil = pDevDir->entryInfoList();
     foreach (QFileInfo fi, fil) {
         minIdleTime = qMin(minIdleTime, (int)fi.lastModified().secsTo(now));
-        if (minIdleTime < _min) return minIdleTime;
+        if (minIdleTime < _min) {
+            DS << __PRETTY_FUNCTION__ << " return : " << minIdleTime << " / " << fi.fileName() << endl;
+            return minIdleTime;
+        }
     }
     // Az X, Saját display:
     int xidle = xprintidle();
     if (xidle < 0) return -1;
     minIdleTime = qMin(minIdleTime, xidle);
-    if (minIdleTime < _min) return minIdleTime;
+    if (minIdleTime < _min) {
+        DS << __PRETTY_FUNCTION__ << " return : " << minIdleTime << " / X" << endl;
+        return minIdleTime;
+    }
     static int display = -1;    // static mert nem vátozik
     if (display == -1) {
         display = getDisplay();
@@ -141,7 +151,11 @@ int getIdleTime(int _min)
         xidle = xprintidle(cmd, false);
         if (xidle < 0) return -1;
         minIdleTime = qMin(minIdleTime, xidle);
-        if (minIdleTime < _min) return minIdleTime;
+        if (minIdleTime < _min) {
+            DS << __PRETTY_FUNCTION__ << " return : " << minIdleTime << " / X:" << dn << endl;
+            return minIdleTime;
+        }
     }
+    DS << __PRETTY_FUNCTION__ << " return : " << minIdleTime << endl;
     return minIdleTime;
 }

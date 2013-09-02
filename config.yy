@@ -65,6 +65,7 @@ static int yylex(void);
 
 %token      DOMAIN_T RDP_T OFF_T HELP_T COMMAND_T APP_T
 %token      IDLE_T DIALOG_T TIME_T MIN_T RUN_T WEB_T KIOSK_T
+%token      RESTART_T
 
 %token <i>  INTEGER_V
 %token <s>  STRING_V NAME_V
@@ -83,12 +84,15 @@ configs : config
 config  : DOMAIN_T str '{' strs '}'         { Dialog::addDomain($2, $4); }
         | RDP_T COMMAND_T str ';'           { Dialog::setRdpCmd($3); }
         | OFF_T COMMAND_T str ';'           { Dialog::setOffCmd($3); }
+        | RESTART_T COMMAND_T str ';'       { Dialog::setResCmd($3); }
         | HELP_T COMMAND_T str ';'          { Dialog::setHelpCmd($3); }
         | IDLE_T TIME_T int ';'             { idleTime  = $3; }
         | IDLE_T DIALOG_T TIME_T int ';'    { idleDialogTime  = $4; }
         | MIN_T RUN_T TIME_T int ';'        { minProgTime = $4; }
         | COMMAND_T str cmd icon int_z ';'  { Dialog::addCommand($2, $3, $4, $5); }
-        | KIOSK_T ';'                       { isKiosk = true; }
+        | KIOSK_T COMMAND_T str ';'         { Dialog::setKioskCmd($3); }
+        | KIOSK_T IDLE_T TIME_T int ';'     { kioskIdleTime  = $4; }
+        | KIOSK_T IDLE_T DIALOG_T TIME_T int ';' { kioskIdleDialogTime  = $5; }
         ;
 str     : NAME_V        { $$ = $1; }
         | STRING_V      { $$ = $1; }
@@ -104,10 +108,12 @@ int_z   : int           { $$ = $1; }
 cmd     : str           { $$ = $1; }
         | HELP_T        { $$ = new QString(Dialog::getRdpCmd()); }
         | OFF_T         { $$ = new QString(Dialog::getOffCmd()); }
+        | RESTART_T     { $$ = new QString(Dialog::getResCmd()); }
         ;
 icon    : str           { $$ = $1; }
         | HELP_T        { $$ = new QString(":/images/help.ico"); }
         | WEB_T         { $$ = new QString(":/images/web.ico"); }
+        | KIOSK_T       { $$ = new QString(":/images/info.ico"); }
         | OFF_T         { $$ = new QString(":/images/off.ico"); }
         | APP_T         { $$ = new QString(":/images/app.ico"); }
         |               { $$ = new QString(":/images/app.ico"); }
@@ -182,6 +188,7 @@ static int yylex(void)
     } sToken[] = {
         TOK(DOMAIN) TOK(RDP) TOK(OFF) TOK(HELP) TOK(COMMAND) TOK(APP)
         TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB) TOK(KIOSK)
+        TOK(RESTART)
         { NULL, 0 }
     };
     bool ok;

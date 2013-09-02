@@ -18,6 +18,7 @@
 #define _STR(s) #s
 #define STR(s)  _STR(s)
 
+#define FULLSCREEN 0
 #define __DEBUG
 extern QTextStream *pDS;
 #define DS *pDS
@@ -37,12 +38,18 @@ extern int minProgTime;
 
 /// Idle time counter
 extern int idleTimeCnt;
+#define KIOSKIDLETIME 120
+extern int kioskIdleTime;
+#define KIOSKIDLEDIALOGTIME 30
+extern int kioskIdleDialogTime;
+extern bool kioskIsOn;
 
 extern QString sSugg;
 extern QString sCrit;
 extern QString hostname;
 extern int     desktopHeiht, desktopWidth;
 
+extern bool    isDown;
 extern bool    isKiosk;
 
 extern QString             yyLastError;
@@ -51,6 +58,7 @@ extern int                 yyLineNo;
 extern QString             yyLine;
 extern int parseConfig(QFile *_in);
 
+/* // Az idletime() ezt kiváltja
 class QMyApplication : public QApplication
 {
     Q_OBJECT
@@ -58,7 +66,7 @@ public:
     QMyApplication(int argc, char *argv[]);
 protected:
     bool notify ( QObject * receiver, QEvent * event );
-};
+};*/
 
 class msgBox : public QDialog
 {

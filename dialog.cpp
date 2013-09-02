@@ -2,16 +2,13 @@
 #include "ui_dialog.h"
 #include "idletimeout.h"
 
-int idleTime        = IDLETIME;
-int idleDialogTime  = IDLEDIALOGTIME;
-int minProgTime     = MINPRCTM;
-
 Dialog * Dialog::pItem = NULL;
 
 Dialog::Dialog(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Dialog),
-    domains(), servers(), rdpcmd(), offcmd(), hlpcmd(),
+    domains(), servers(), rdpcmd(), offcmd(), rescmd(), hlpcmd(),
+    kioskcmd(),
     goNames(), goCommands(), goIcons(), goTimes(),
     procOut(), lastCommand()
 {
@@ -37,11 +34,26 @@ Dialog::Dialog(QWidget *parent) :
 
 Dialog::~Dialog()
 {
-    pItem = NULL;
     DS << __PRETTY_FUNCTION__ << endl;
+    pItem = NULL;
     killTimer(timerId);
-    if (pProc != NULL) delete pProc;
+    // if (pProc != NULL) delete pProc;
     delete ui;
+}
+
+inline QFrame *Dialog::hLine()
+{
+    QFrame *pLine = new QFrame(this);
+    pLine->setFrameShape(QFrame::HLine);
+    return pLine;
+}
+inline QPushButton *Dialog::button(QString txt, QString ico)
+{
+    QPushButton *pPB = new QPushButton(this);
+    pPB->setText(txt);
+    pPB->setIcon(QIcon(ico));
+    pPB->setIconSize(QSize(32,32));
+    return pPB;
 }
 
 void Dialog::set()
@@ -50,24 +62,32 @@ void Dialog::set()
     ui->domainCB->addItems(domains);
     ui->serverCB->clear();
     ui->serverCB->addItems(servers.first());
+    QVBoxLayout *pLayout;
+    if (isKiosk) {
+        ui->offPB->setText(trUtf8("Újrainítás"));
+        offcmd = rescmd;
+        pLayout = ui->logOnLayout;
+        pLayout->addWidget(hLine());
+        QString icon = ":/images/info.ico";
+        QPushButton *pPB = button(trUtf8("Kiosk (böngésző) idítása"), icon);
+        pLayout->addWidget(pPB);
+        connect(pPB, SIGNAL(clicked()), this, SLOT(kiosk()));
+        ui->autoOffCnt->hide();
+        ui->autoOffAfterL->setText(trUtf8("nincs."));
+    }
     int n = goCommands.size();
     if (n > 0) {
-        QVBoxLayout *pLayout = ui->buttomLayout;
+        pLayout = ui->buttonLayout;
+        pLayout->addWidget(hLine());
         pButtonGroup = new QButtonGroup(this);
-        QFrame *pLine = new QFrame(this);
-        pLine->setFrameShape(QFrame::HLine);
-        pLayout->addWidget(pLine);
         for (int i = 0; i < n; ++i) {
-            QPushButton *pPB = new QPushButton(this);
-            pPB->setText(goNames[i]);
-            pPB->setIcon(QIcon(goIcons[i]));
-            pPB->setIconSize(QSize(32,32));
+            QPushButton *pPB = button(goNames[i], goIcons[i]);
             pLayout->addWidget(pPB);
             pButtonGroup->addButton(pPB, i);
         }
         connect(pButtonGroup, SIGNAL(buttonReleased(int)), this, SLOT(go(int)));
+        ui->autoOffCnt->setText(QString::number(idleTime));
     }
-
 }
 
 void Dialog::timerEvent(QTimerEvent * pTe)
@@ -77,19 +97,51 @@ void Dialog::timerEvent(QTimerEvent * pTe)
         return;
     }
     // Ha nem fut parancs / nem vagyunk háttérben, mérjuk a tétlenségi időt
+    if (isDown) return;
     if (pProc == NULL || pProc->state() == QProcess::NotRunning) {
-        ui->autoOffCnt->setText(QString::number(IDLETIME - idleTimeCnt));
-        if ((IDLETIME - IDLEDIALOGTIME) <= idleTimeCnt) {
-            idleTimeOut();
+        if (idleTime <= 0 || isKiosk) return;
+        DS << "idle : " << idleTimeCnt << " no run" << endl;
+        int maxCnt = idleTime - idleDialogTime;
+        if (maxCnt <= idleTimeCnt) {
+            idleTimeCnt = getIdleTime(maxCnt);
         }
-        ++idleTimeCnt;
-        procTime = 0;
+        if (maxCnt <= idleTimeCnt) {
+            idleTimeOut();
+            idleTimeCnt = 0;
+            DS << __PRETTY_FUNCTION__ << " exit (no run)" << endl;
+            return;
+        }
     }
     // Ha fut egy parancs, akkor annak a futási idejét mérjük
+    else if (kioskIsOn) {
+        DS << "idle : " << idleTimeCnt << " kiosk" << endl;
+        int maxCnt = kioskIdleTime - kioskIdleDialogTime;
+        if (maxCnt <= idleTimeCnt) {
+            idleTimeCnt = getIdleTime(maxCnt);
+        }
+        if (maxCnt <= idleTimeCnt) {
+            idleTimeOut();
+            idleTimeCnt = 0;
+            DS << __PRETTY_FUNCTION__ << " exit (kiosk)" << endl;
+            return;
+        }
+    }
     else {
         ++procTime;
-        idleTimeCnt = 0;
+        DS << "idle : " << idleTimeCnt << " run " << procTime << endl;
+        int maxCnt = idleTime - idleDialogTime;
+        if (maxCnt <= idleTimeCnt) {
+            idleTimeCnt = getIdleTime(maxCnt);
+        }
+        if (maxCnt <= idleTimeCnt) {
+            idleTimeOut();
+            idleTimeCnt = 0;
+            DS << __PRETTY_FUNCTION__ << " exit (run)" << endl;
+            return;
+        }
     }
+    ++idleTimeCnt;
+    DS << __PRETTY_FUNCTION__ << " up" << endl;
 }
 
 
@@ -111,13 +163,32 @@ void    Dialog::logOn()
     command(cmd);
 }
 
+void    Dialog::kiosk()
+{
+    kioskIsOn = true;
+    command(kioskcmd, -1);
+}
+
 void    Dialog::off()
 {
-    command(offcmd);
+    DS << __PRETTY_FUNCTION__ << endl;
+    isDown = true;
+    if (pProc != NULL) {
+        disconnect(pProc, SIGNAL(readyRead()),                     this, SLOT(procReadyRead()));
+        disconnect(pProc, SIGNAL(error(QProcess::ProcessError)),   this, SLOT(procError(QProcess::ProcessError)));
+        disconnect(pProc, SIGNAL(finished(int)),                   this, SLOT(procFinished(int)));
+        disconnect(pProc, SIGNAL(started()),                       this, SLOT(procStarted()));
+        if (pProc->state() != QProcess::NotRunning) {
+            pProc->kill();
+            pProc->waitForFinished(1000);
+        }
+    }
+    command(offcmd, -1);
 }
 
 void    Dialog::go(int id)
 {
+    DS << __PRETTY_FUNCTION__ << endl;
     command(goCommands[id]);
 }
 
@@ -139,42 +210,57 @@ void Dialog::command(const QString &cmd, int minTm)
 {
     DS << "Command : " << cmd << endl;
     if (pProc != NULL) {
-        if (pProc->state() != QProcess::NotRunning) {
+        if (pProc->state() != QProcess::NotRunning && isDown == false) {
             QMessageBox::critical(this, "Kritikus hiba!", trUtf8("Program hiba : %1").arg(__PRETTY_FUNCTION__));
-            exit(1);
+            ::exit(1);
         }
     }
     else {
         pProc = new QProcess(this);
-        pProc->setProcessChannelMode(QProcess::MergedChannels);
-        connect(pProc, SIGNAL(readyRead()),                     this, SLOT(procReadyRead()));
-        connect(pProc, SIGNAL(error(QProcess::ProcessError)),   this, SLOT(procError(QProcess::ProcessError)));
-        connect(pProc, SIGNAL(finished(int)),                   this, SLOT(procFinished(int)));
-        connect(pProc, SIGNAL(started()),                       this, SLOT(procStated()));
+        if (isDown == false) {
+            pProc->setProcessChannelMode(QProcess::MergedChannels);
+            connect(pProc, SIGNAL(readyRead()),                     this, SLOT(procReadyRead()));
+            connect(pProc, SIGNAL(error(QProcess::ProcessError)),   this, SLOT(procError(QProcess::ProcessError)));
+            connect(pProc, SIGNAL(finished(int)),                   this, SLOT(procFinished(int)));
+            connect(pProc, SIGNAL(started()),                       this, SLOT(procStarted()));
+        }
     }
     actMinProgTime = minTm;
     procOut.clear();
-    procTime = 0;
+    procTime = -1;
     pProc->start(cmd, QIODevice::ReadOnly);
     hide();
 }
 
-void    Dialog::procStated()
+void    Dialog::procStarted()
 {
     DS << "proc started..." << endl;
+    procTime = 0;
 }
 
 void    Dialog::procReadyRead()
 {
     DS << __PRETTY_FUNCTION__ << endl;
+    if (isDown) return;
     QString s = QString::fromUtf8(pProc->readAll());
+    if (kioskIsOn) return;
     procOut += s.replace(QChar('\n'), QString("\n<br>"));
 }
 
 void    Dialog::procError(QProcess::ProcessError e)
 {
-    DS << __PRETTY_FUNCTION__ << endl;
+    DS << __PRETTY_FUNCTION__ << (int)e << endl;
+    if (isDown) return;
+#if FULLSCREEN
     showFullScreen();
+#else
+    show();
+#endif // FULLSCREEN
+
+    if (kioskIsOn) {
+        kioskIsOn = false;
+        return;
+    }
 
     QString msg;
     msg  = trUtf8("<h1>Parancs, vagy parancs idítási hiba</h1>\n");
@@ -201,9 +287,17 @@ void    Dialog::procError(QProcess::ProcessError e)
 
 void    Dialog::procFinished(int r)
 {
-    DS << __PRETTY_FUNCTION__ << endl;
+    DS << __PRETTY_FUNCTION__ << r << endl;
+    if (isDown) return;
+#if FULLSCREEN
     showFullScreen();
-
+#else
+    show();
+#endif // FULLSCREEN
+    if (kioskIsOn) {
+        kioskIsOn = false;
+        return;
+    }
     if (procTime < actMinProgTime) {  // Túl hamar kilépett
         QString msg;
         msg  = trUtf8("<h1>A parancs futási ideje gyanús. Hiba történt?</h1>\n");
@@ -221,12 +315,42 @@ void    Dialog::procFinished(int r)
 
 void Dialog::idleTimeOut()
 {
-    cIdleTimeOut    d(this);
-    if (d.exec() == QDialog::Rejected) {
-        idleTimeCnt = 0;
-        return;
+    if (isDown) return;
+    DS << "kill timer..." << endl;
+    killTimer(timerId);
+    timerId = -1;
+    if (kioskIsOn) {
+        DS << __PRETTY_FUNCTION__ << " kiosk" << endl;
+        cIdleTimeOut    d(true, this);
+        if (d.exec() == QDialog::Rejected) {
+            idleTimeCnt = 0;
+            DS << "Continue ..." << endl;
+        }
+        else {
+            DS << "terminate browser ..." << endl;
+            pProc->terminate();
+            pProc->waitForFinished(1000);
+            DS << "terminated browser." << endl;
+            kioskIsOn = false;
+        }
     }
-    off();
-    // exit(1); // csak elfedi, ha hiba van
+    else {
+        DS << __PRETTY_FUNCTION__ <<  endl;
+        cIdleTimeOut    d(false, this);
+        if (d.exec() == QDialog::Rejected) {
+            idleTimeCnt = 0;
+            DS << "Continue ..." << endl;
+        }
+        else {
+            DS << "off by " << __PRETTY_FUNCTION__ << endl;
+            off();
+            DS << "exit by " << __PRETTY_FUNCTION__ << endl;
+            QApplication::exit();
+            return;
+        }
+    }
+    DS << "Start timer..." << endl;
+    timerId = startTimer(1000);
+    DS << __PRETTY_FUNCTION__ << " end function" << endl;
 }
 

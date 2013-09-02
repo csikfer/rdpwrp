@@ -21,13 +21,15 @@ protected:
     void command(const QString& cmd, int minTm = minProgTime);
     /// Kikapcsolásra figyelmeztetés
     void idleTimeOut();
-    QIcon   goIcon(int _i);
+    QIcon   goImaincon(int _i);
     Ui::Dialog *ui;
     QStringList         domains;
     QList<QStringList>  servers;
     QString             rdpcmd;
     QString             offcmd;
+    QString             rescmd;
     QString             hlpcmd;
+    QString             kioskcmd;
     QStringList         goNames;
     QStringList         goCommands;
     QStringList         goIcons;
@@ -42,13 +44,14 @@ protected:
     int                 actMinProgTime;
 private slots:
     void    logOn();
+    void    kiosk();
     void    off();
     void    help();
     void    go(int id);
     void    chgUsrOrPw(QString);
     void    selDomain(int ix);
 
-    void    procStated();
+    void    procStarted();
     void    procReadyRead();
     void    procError(QProcess::ProcessError e);
     void    procFinished(int r);
@@ -65,11 +68,17 @@ public:
     }
     static void setRdpCmd(QString * pCmd)   { _SET(rdpcmd, pCmd); }
     static void setOffCmd(QString * pCmd)   { _SET(offcmd, pCmd); }
+    static void setResCmd(QString * pCmd)   { _SET(rescmd, pCmd); }
     static void setHelpCmd(QString * pCmd)  { _SET(hlpcmd, pCmd); }
+    static void setKioskCmd(QString * pCmd) { _SET(kioskcmd, pCmd); isKiosk = true; }
 
     static const QString& getRdpCmd()       { _GET(rdpcmd); }
     static const QString& getOffCmd()       { _GET(offcmd); }
+    static const QString& getResCmd()       { _GET(rescmd); }
     static const QString& getHelpCmd()      { _GET(hlpcmd); }
+private:
+    inline QFrame *hLine();
+    inline QPushButton *button(QString txt, QString ico);
 };
 
 #endif // DIALOG_H

@@ -7,5 +7,6 @@
         <file>images/off.ico</file>
         <file>images/web.ico</file>
         <file>images/windows.png</file>
+        <file>images/info.ico</file>
     </qresource>
 </RCC>

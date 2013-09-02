@@ -7,13 +7,22 @@ int idleTimeCnt = 0;
 QString sSugg;
 QString sCrit;
 QString hostname;
+bool    isDown  = false;
 bool    isKiosk = false;
 int     desktopHeiht, desktopWidth;
 
+int idleTime        = IDLETIME;
+int idleDialogTime  = IDLEDIALOGTIME;
+int minProgTime     = MINPRCTM;
+int kioskIdleTime   = KIOSKIDLETIME;
+int kioskIdleDialogTime = KIOSKIDLEDIALOGTIME;
+bool kioskIsOn = false;
+
 int main(int argc, char *argv[])
 {
-    QMyApplication a(argc, argv);
-    //A resource-ban lévő ikonom
+    //QMyApplication a(argc, argv);
+    QApplication a(argc, argv);
+
     sSugg = QObject::trUtf8("<br>Kérem forduljon a rendszergazdához!");
     sCrit = QObject::trUtf8("Végzetes hiba!");
     desktopHeiht = QApplication::desktop()->height();
@@ -35,7 +44,7 @@ int main(int argc, char *argv[])
     if (arg1 == QString("get-idle")) {
         int test = getIdleTime();
         DS << "idle time : " << test << endl;
-        exit(0);
+        ::exit(0);
     }
     // END TEST
 #else
@@ -48,7 +57,7 @@ int main(int argc, char *argv[])
 
     if (!fconf.open(QIODevice::ReadOnly)) {
         QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A konfigurációs fájl nem olvasható, vagy nem létezik.") + sSugg);
-        exit(1);
+        ::exit(1);
     }
     if (0 != parseConfig(&fconf)) {
         const QString br = "<br>";
@@ -62,17 +71,21 @@ int main(int argc, char *argv[])
         msg += br + "<i>" + yyLastLine + "</i>";
         msg += sSugg;
         QMessageBox::critical(NULL, sCrit,  msg);
-        exit(1);
+        ::exit(1);
     }
     w.set();
-
+#if FULLSCREEN
     w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
     w.showFullScreen();
-    
-    return a.exec();
+#else
+    w.show();
+#endif // FULLSCREEN
+    int r = a.exec();
+    DS << "exit loop : " << r << endl;
+    return r;
 }
 
-/* ***************************************************************** */
+/* ***************************************************************** *
 
 QMyApplication::QMyApplication(int argc, char *argv[]) : QApplication(argc, argv)
 {
@@ -87,7 +100,7 @@ bool QMyApplication::notify ( QObject * receiver, QEvent * event )
     return QApplication::notify(receiver, event);
 }
 
-/* ***************************************************************** */
+ * ***************************************************************** */
 
 msgBox::msgBox(QWidget *p) : QDialog(p)
 {

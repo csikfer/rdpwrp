@@ -102,7 +102,7 @@
       </spacer>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="logOnLayout">
        <item>
         <layout class="QFormLayout" name="formLayout">
          <property name="fieldGrowthPolicy">
@@ -115,6 +115,15 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="languageCB">
+           <item>
+            <property name="text">
+             <string>Magyar</string>
+            </property>
+           </item>
+          </widget>
+         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="domainL">
            <property name="text">
@@ -122,12 +131,18 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="domainCB"/>
+         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="serverL">
            <property name="text">
             <string>Kiszolgáló</string>
            </property>
           </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="serverCB"/>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="userL">
@@ -166,55 +181,36 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="languageCB">
-           <item>
-            <property name="text">
-             <string>Magyar</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="domainCB"/>
-         </item>
-         <item row="2" column="1">
-          <widget class="QComboBox" name="serverCB"/>
-         </item>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QPushButton" name="logOnPB">
-           <property name="text">
-            <string>Belépés a terminál szerverre</string>
-           </property>
-           <property name="icon">
-            <iconset resource="rdpwrp.qrc">
-             <normaloff>:/images/windows.png</normaloff>:/images/windows.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>32</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-           <property name="autoDefault">
-            <bool>true</bool>
-           </property>
-           <property name="default">
-            <bool>true</bool>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QPushButton" name="logOnPB">
+         <property name="text">
+          <string>Belépés a terminál szerverre</string>
+         </property>
+         <property name="icon">
+          <iconset resource="rdpwrp.qrc">
+           <normaloff>:/images/windows.png</normaloff>:/images/windows.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_4">
@@ -228,9 +224,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7"/>
        </item>
       </layout>
      </item>
@@ -286,7 +279,7 @@
           </widget>
          </item>
          <item>
-          <layout class="QVBoxLayout" name="buttomLayout"/>
+          <layout class="QVBoxLayout" name="buttonLayout"/>
          </item>
          <item>
           <spacer name="verticalSpacer_3">
@@ -360,12 +353,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="autoOffAfterL">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>másodperc múéva.</string>
+         <string>másodperc tétlenaotoOffAgterLslg esetén.</string>
         </property>
        </widget>
       </item>
@@ -401,7 +394,6 @@
   <tabstop>serverCB</tabstop>
   <tabstop>userLE</tabstop>
   <tabstop>passwordLE</tabstop>
-  <tabstop>logOnPB</tabstop>
  </tabstops>
  <resources>
   <include location="rdpwrp.qrc"/>
