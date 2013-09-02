@@ -106,7 +106,7 @@ void Dialog::timerEvent(QTimerEvent * pTe)
             idleTimeCnt = getIdleTime(maxCnt);
         }
         if (maxCnt <= idleTimeCnt) {
-            idleTimeOut();
+            idleTimeOutBox();
             idleTimeCnt = 0;
             DS << __PRETTY_FUNCTION__ << " exit (no run)" << endl;
             return;
@@ -120,7 +120,7 @@ void Dialog::timerEvent(QTimerEvent * pTe)
             idleTimeCnt = getIdleTime(maxCnt);
         }
         if (maxCnt <= idleTimeCnt) {
-            idleTimeOut();
+            idleTimeOutBox();
             idleTimeCnt = 0;
             DS << __PRETTY_FUNCTION__ << " exit (kiosk)" << endl;
             return;
@@ -134,7 +134,7 @@ void Dialog::timerEvent(QTimerEvent * pTe)
             idleTimeCnt = getIdleTime(maxCnt);
         }
         if (maxCnt <= idleTimeCnt) {
-            idleTimeOut();
+            idleTimeOutBox();
             idleTimeCnt = 0;
             DS << __PRETTY_FUNCTION__ << " exit (run)" << endl;
             return;
@@ -313,18 +313,18 @@ void    Dialog::procFinished(int r)
     }
 }
 
-void Dialog::idleTimeOut()
+void Dialog::idleTimeOutBox()
 {
     if (isDown) return;
     DS << "kill timer..." << endl;
     killTimer(timerId);
     timerId = -1;
-    if (kioskIsOn) {
+    if (isKiosk) {
         DS << __PRETTY_FUNCTION__ << " kiosk" << endl;
-        cIdleTimeOut    d(true, this);
+        cIdleTimeOut    d(true);
         if (d.exec() == QDialog::Rejected) {
             idleTimeCnt = 0;
-            DS << "Continue ..." << endl;
+            DS << "Continue kiosk browser..." << endl;
         }
         else {
             DS << "terminate browser ..." << endl;
@@ -336,10 +336,10 @@ void Dialog::idleTimeOut()
     }
     else {
         DS << __PRETTY_FUNCTION__ <<  endl;
-        cIdleTimeOut    d(false, this);
+        cIdleTimeOut    d(false);
         if (d.exec() == QDialog::Rejected) {
             idleTimeCnt = 0;
-            DS << "Continue ..." << endl;
+            DS << "Continue program ..." << endl;
         }
         else {
             DS << "off by " << __PRETTY_FUNCTION__ << endl;

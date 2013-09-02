@@ -20,8 +20,7 @@ protected:
     /// Egy parancs végrahajtása
     void command(const QString& cmd, int minTm = minProgTime);
     /// Kikapcsolásra figyelmeztetés
-    void idleTimeOut();
-    QIcon   goImaincon(int _i);
+    void idleTimeOutBox();
     Ui::Dialog *ui;
     QStringList         domains;
     QList<QStringList>  servers;

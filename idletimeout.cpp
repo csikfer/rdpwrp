@@ -2,39 +2,41 @@
 #include <QPushButton>
 #include "dialog.h"
 
-cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *parent) :
-    QDialog(parent),
+cIdleTimeOut::cIdleTimeOut(bool _kiosk) :
+    QDialog(),
     ui(new Ui::idleTimeOut)
 {
+    DS << __PRETTY_FUNCTION__ << " : " << _kiosk << endl;
     idleTimeCnt = 0;
     ui->setupUi(this);
     setStyleSheet("background-color: yellow");
     if (_kiosk) {
         ui->labelUp->setText(trUtf8("A böngésző auomatikusan ki fog lépni"));
         ui->labelDown->setText(trUtf8("másodperc múlva.\n\nHa nem szertné, hogy a böngésző kilépjen,\nmegnyomhatja az ESC gombot is."));
-        ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(trUtf8("Ne!"));
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setText(trUtf8("Kilépés."));
+        ui->contPB->setText(trUtf8("Ne!"));
+        ui->endPB->setText(trUtf8("Kilépés."));
         waitTime = kioskIdleDialogTime;
     }
     else {
         ui->labelUp->setText(trUtf8("A terminál auomatikusan ki fog kapcsolni"));
         ui->labelDown->setText(trUtf8("másodperc múlva.\n\nHa nem szertné, hogy kikapcsoljon a terminál,\nmegnyomhatja az ESC gombot is."));
-        ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(trUtf8("Ne!"));
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setText(trUtf8("Kikapcsolás!"));
+        ui->contPB->setText(trUtf8("Ne!"));
+        ui->endPB->setText(trUtf8("Kikapcsolás!"));
         ui->lcdNumber->display(idleDialogTime);
         waitTime = idleDialogTime;
     }
     ui->lcdNumber->display(waitTime);
     timeCnt = 0;
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->endPB,  SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ui->contPB, SIGNAL(clicked()), this, SLOT(reject()));
     timerId = startTimer(1000);
     // setModal(true);
 }
 
 cIdleTimeOut::~cIdleTimeOut()
 {
-    killTimer(timerId);
+    DS << __PRETTY_FUNCTION__ << endl;
+//  killTimer(timerId);
     delete ui;
 }
 
