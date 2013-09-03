@@ -17,6 +17,15 @@
    <iconset resource="rdpwrp.qrc">
     <normaloff>:/images/off.ico</normaloff>:/images/off.ico</iconset>
   </property>
+  <property name="accessibleDescription">
+   <string notr="true"/>
+  </property>
+  <property name="windowFilePath">
+   <string notr="true"/>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <spacer name="verticalSpacer_2">

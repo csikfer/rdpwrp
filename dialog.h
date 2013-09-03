@@ -19,8 +19,6 @@ protected:
     void timerEvent(QTimerEvent *pTe);
     /// Egy parancs végrahajtása
     void command(const QString& cmd, int minTm = minProgTime);
-    /// Kikapcsolásra figyelmeztetés
-    void idleTimeOutBox();
     Ui::Dialog *ui;
     QStringList         domains;
     QList<QStringList>  servers;
@@ -54,6 +52,10 @@ private slots:
     void    procReadyRead();
     void    procError(QProcess::ProcessError e);
     void    procFinished(int r);
+    /// Kikapcsolásra figyelmeztetés
+    void    idleTimeOutBox();
+signals:
+    void    doTOBox();
 public:
 #define _ADD(m, p)  pItem->m << *p;  delete p
 #define _SET(m, p)  pItem->m =  *p;  delete p

@@ -29,7 +29,6 @@ Dialog::Dialog(QWidget *parent) :
     connect(ui->passwordLE, SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
     connect(ui->domainCB,   SIGNAL(currentIndexChanged(int)),this,SLOT(selDomain(int)));
 
-    timerId = startTimer(1000);
 }
 
 Dialog::~Dialog()
@@ -64,12 +63,12 @@ void Dialog::set()
     ui->serverCB->addItems(servers.first());
     QVBoxLayout *pLayout;
     if (isKiosk) {
-        ui->offPB->setText(trUtf8("Újrainítás"));
+        ui->offPB->setText(trUtf8("Újraindítás"));
         offcmd = rescmd;
         pLayout = ui->logOnLayout;
         pLayout->addWidget(hLine());
         QString icon = ":/images/info.ico";
-        QPushButton *pPB = button(trUtf8("Kiosk (böngésző) idítása"), icon);
+        QPushButton *pPB = button(trUtf8("Kiosk (böngésző) indítása"), icon);
         pLayout->addWidget(pPB);
         connect(pPB, SIGNAL(clicked()), this, SLOT(kiosk()));
         ui->autoOffCnt->hide();
@@ -88,10 +87,13 @@ void Dialog::set()
         connect(pButtonGroup, SIGNAL(buttonReleased(int)), this, SLOT(go(int)));
         ui->autoOffCnt->setText(QString::number(idleTime));
     }
+    connect(this, SIGNAL(doTOBox()), this, SLOT(idleTimeOutBox()), Qt::QueuedConnection);
+    timerId = startTimer(1000);
 }
 
 void Dialog::timerEvent(QTimerEvent * pTe)
 {
+    DS << "Enter : " << __PRETTY_FUNCTION__ << endl;
     if (timerId != pTe->timerId()) {
         DS << "Ismeretlen ID timerEvent-ben : " << pTe->timerId() << endl;
         return;
@@ -106,7 +108,7 @@ void Dialog::timerEvent(QTimerEvent * pTe)
             idleTimeCnt = getIdleTime(maxCnt);
         }
         if (maxCnt <= idleTimeCnt) {
-            idleTimeOutBox();
+            emit doTOBox(); // idleTimeOutBox();
             idleTimeCnt = 0;
             DS << __PRETTY_FUNCTION__ << " exit (no run)" << endl;
             return;
@@ -120,7 +122,7 @@ void Dialog::timerEvent(QTimerEvent * pTe)
             idleTimeCnt = getIdleTime(maxCnt);
         }
         if (maxCnt <= idleTimeCnt) {
-            idleTimeOutBox();
+            emit doTOBox(); // idleTimeOutBox();
             idleTimeCnt = 0;
             DS << __PRETTY_FUNCTION__ << " exit (kiosk)" << endl;
             return;
@@ -134,7 +136,7 @@ void Dialog::timerEvent(QTimerEvent * pTe)
             idleTimeCnt = getIdleTime(maxCnt);
         }
         if (maxCnt <= idleTimeCnt) {
-            idleTimeOutBox();
+            emit doTOBox(); // idleTimeOutBox();
             idleTimeCnt = 0;
             DS << __PRETTY_FUNCTION__ << " exit (run)" << endl;
             return;
@@ -321,10 +323,13 @@ void Dialog::idleTimeOutBox()
     timerId = -1;
     if (isKiosk) {
         DS << __PRETTY_FUNCTION__ << " kiosk" << endl;
-        cIdleTimeOut    d(true);
+        cIdleTimeOut    d(true, this);
         if (d.exec() == QDialog::Rejected) {
             idleTimeCnt = 0;
             DS << "Continue kiosk browser..." << endl;
+            // Ez után, ha kilép a föggvényből
+            // akkor kilép az app event loop-ból is, vagyis kilép a program.
+            // De miért ??
         }
         else {
             DS << "terminate browser ..." << endl;
@@ -336,7 +341,7 @@ void Dialog::idleTimeOutBox()
     }
     else {
         DS << __PRETTY_FUNCTION__ <<  endl;
-        cIdleTimeOut    d(false);
+        cIdleTimeOut    d(false, this);
         if (d.exec() == QDialog::Rejected) {
             idleTimeCnt = 0;
             DS << "Continue program ..." << endl;

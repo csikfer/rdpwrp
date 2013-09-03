@@ -12,7 +12,7 @@ class cIdleTimeOut : public QDialog
 {
     Q_OBJECT
 public:
-    explicit cIdleTimeOut(bool _kiosk);
+    explicit cIdleTimeOut(bool _kiosk, QWidget *parent = NULL);
     ~cIdleTimeOut();
 
 protected:

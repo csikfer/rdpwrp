@@ -2,8 +2,8 @@
 #include <QPushButton>
 #include "dialog.h"
 
-cIdleTimeOut::cIdleTimeOut(bool _kiosk) :
-    QDialog(),
+cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *parent) :
+    QDialog(parent),
     ui(new Ui::idleTimeOut)
 {
     DS << __PRETTY_FUNCTION__ << " : " << _kiosk << endl;
