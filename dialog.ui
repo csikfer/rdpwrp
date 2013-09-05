@@ -213,6 +213,30 @@
         </widget>
        </item>
        <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="browserPB">
+         <property name="text">
+          <string>Böngésző indítása</string>
+         </property>
+         <property name="icon">
+          <iconset resource="rdpwrp.qrc">
+           <normaloff>:/images/web.ico</normaloff>:/images/web.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -252,6 +276,40 @@
            <property name="icon">
             <iconset resource="rdpwrp.qrc">
              <normaloff>:/images/off.ico</normaloff>:/images/off.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="rebootPB">
+           <property name="text">
+            <string>Újraindít</string>
+           </property>
+           <property name="icon">
+            <iconset resource="rdpwrp.qrc">
+             <normaloff>:/images/restart.ico</normaloff>:/images/restart.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cleanPB">
+           <property name="text">
+            <string>Meleg start</string>
+           </property>
+           <property name="icon">
+            <iconset resource="rdpwrp.qrc">
+             <normaloff>:/images/clean.ico</normaloff>:/images/clean.ico</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -340,7 +398,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="autoOffCnt">
+       <widget class="QLabel" name="autoOffSec">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -358,7 +416,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>másodperc tétlenaotoOffAgterLslg esetén.</string>
+         <string>másodperc tétlenaoto esetén.</string>
         </property>
        </widget>
       </item>

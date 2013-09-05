@@ -3,7 +3,7 @@
 #include "dialog.h"
 
 cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *parent) :
-    QDialog(parent),
+    QDialog(),
     ui(new Ui::idleTimeOut)
 {
     DS << __PRETTY_FUNCTION__ << " : " << _kiosk << endl;
@@ -15,7 +15,7 @@ cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *parent) :
         ui->labelDown->setText(trUtf8("másodperc múlva.\n\nHa nem szertné, hogy a böngésző kilépjen,\nmegnyomhatja az ESC gombot is."));
         ui->contPB->setText(trUtf8("Ne!"));
         ui->endPB->setText(trUtf8("Kilépés."));
-        waitTime = kioskIdleDialogTime;
+        waitTime = idleDialogTime;
     }
     else {
         ui->labelUp->setText(trUtf8("A terminál auomatikusan ki fog kapcsolni"));
@@ -30,7 +30,7 @@ cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *parent) :
     connect(ui->endPB,  SIGNAL(clicked()), this, SLOT(accept()));
     connect(ui->contPB, SIGNAL(clicked()), this, SLOT(reject()));
     timerId = startTimer(1000);
-    // setModal(true);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 }
 
 cIdleTimeOut::~cIdleTimeOut()
@@ -42,6 +42,7 @@ cIdleTimeOut::~cIdleTimeOut()
 
 void cIdleTimeOut::timerEvent(QTimerEvent *)
 {
+    activateWindow();
     ++timeCnt;
     if (timeCnt >= waitTime) accept();
     int i = waitTime - timeCnt;

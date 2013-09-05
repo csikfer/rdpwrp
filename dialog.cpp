@@ -1,19 +1,21 @@
 #include "dialog.h"
 #include "ui_dialog.h"
-#include "idletimeout.h"
+#include "QShortcut"
 
-Dialog * Dialog::pItem = NULL;
+mainDialog * mainDialog::pItem = NULL;
 
-Dialog::Dialog(QWidget *parent) :
+mainDialog::mainDialog(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Dialog),
-    domains(), servers(), rdpcmd(), offcmd(), rescmd(), hlpcmd(),
-    kioskcmd(),
+    domains(), servers(), rdpCmds(), rdpcmd(), offcmd(), rescmd(), hlpcmd(),
+    browsercmd(),
     goNames(), goCommands(), goIcons(), goTimes(),
     procOut(), lastCommand()
 {
     pItem = this;
+    pToBox = NULL;
     pButtonGroup = NULL;
+    procesStop = false;
     DS << __PRETTY_FUNCTION__ << endl;
     idleTimeCnt = 0;
     procTime = 0;
@@ -23,15 +25,25 @@ Dialog::Dialog(QWidget *parent) :
     ui->logOnPB->setDisabled(true);
     ui->clientNameL->setText(hostname);
     connect(ui->logOnPB,    SIGNAL(clicked()),            this, SLOT(logOn()));
-    connect(ui->helpPB,     SIGNAL(clicked()),            this, SLOT(help()));
-    connect(ui->offPB,      SIGNAL(clicked()),            this, SLOT(off()));
     connect(ui->userLE,     SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
     connect(ui->passwordLE, SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
     connect(ui->domainCB,   SIGNAL(currentIndexChanged(int)),this,SLOT(selDomain(int)));
 
+    connect(ui->browserPB,  SIGNAL(clicked()),            this, SLOT(browser()));
+
+    connect(ui->offPB,      SIGNAL(clicked()),            this, SLOT(off()));
+    connect(ui->rebootPB,   SIGNAL(clicked()),            this, SLOT(reboot()));
+    connect(ui->cleanPB,    SIGNAL(clicked()),            this, SLOT(restart()));
+    connect(ui->helpPB,     SIGNAL(clicked()),            this, SLOT(help()));
+
+    QShortcut *pSc;
+    pSc = new QShortcut(QKeySequence(QKeySequence::HelpContents), this);                // F1
+    connect(pSc, SIGNAL(activated()), this, SLOT(help()));
+    pSc = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), this);    // Enter
+    connect(pSc, SIGNAL(activated()), this, SLOT(enter()));
 }
 
-Dialog::~Dialog()
+mainDialog::~mainDialog()
 {
     DS << __PRETTY_FUNCTION__ << endl;
     pItem = NULL;
@@ -40,22 +52,46 @@ Dialog::~Dialog()
     delete ui;
 }
 
-inline QFrame *Dialog::hLine()
+void mainDialog::addDomain(QStringPair * pDom, QStringPairList *pServers)
+{
+    pItem->domains << pDom->first;
+    QStringList srvs;
+    QStringList cmds;
+    QString cmd = pDom->second;
+    foreach (QStringPair ss, *pServers) {
+        srvs << ss.first;
+        cmds << (ss.second.isEmpty() ? pDom->second : ss.second);
+    }
+    pItem->servers << srvs;
+    pItem->rdpCmds << cmds;
+    delete pDom;
+    delete pServers;
+}
+
+inline QFrame *mainDialog::hLine()
 {
     QFrame *pLine = new QFrame(this);
     pLine->setFrameShape(QFrame::HLine);
     return pLine;
 }
-inline QPushButton *Dialog::button(QString txt, QString ico)
+
+inline QPushButton *mainDialog::button(QString& txt, QString ico)
 {
     QPushButton *pPB = new QPushButton(this);
+    // Ha felkiáltójellel kezdődik, akkor rejtett, csak a master user/psw -re jelenik meg.
+    bool hidden = txt.startsWith(QChar('!'));
+    if (hidden) {
+        txt = txt.mid(1);
+        pPB->hide();
+    }
     pPB->setText(txt);
     pPB->setIcon(QIcon(ico));
     pPB->setIconSize(QSize(32,32));
+
     return pPB;
 }
 
-void Dialog::set()
+void mainDialog::set()
 {
     ui->domainCB->clear();
     ui->domainCB->addItems(domains);
@@ -63,16 +99,16 @@ void Dialog::set()
     ui->serverCB->addItems(servers.first());
     QVBoxLayout *pLayout;
     if (isKiosk) {
-        ui->offPB->setText(trUtf8("Újraindítás"));
-        offcmd = rescmd;
-        pLayout = ui->logOnLayout;
-        pLayout->addWidget(hLine());
-        QString icon = ":/images/info.ico";
-        QPushButton *pPB = button(trUtf8("Kiosk (böngésző) indítása"), icon);
-        pLayout->addWidget(pPB);
-        connect(pPB, SIGNAL(clicked()), this, SLOT(kiosk()));
-        ui->autoOffCnt->hide();
-        ui->autoOffAfterL->setText(trUtf8("nincs."));
+        ui->offPB->hide();
+    }
+    if (isKiosk || idleTime < 0) {
+        ui->autoOffSec->hide();
+        ui->autoOffAfterL->setText(trUtf8("nincs"));
+    }
+    else ui->autoOffSec->setText(QString::number(idleTime));
+    if (browsercmd.isEmpty()) {
+        ui->browserPB->setDisabled(true);
+        ui->browserPB->hide();
     }
     int n = goCommands.size();
     if (n > 0) {
@@ -85,23 +121,31 @@ void Dialog::set()
             pButtonGroup->addButton(pPB, i);
         }
         connect(pButtonGroup, SIGNAL(buttonReleased(int)), this, SLOT(go(int)));
-        ui->autoOffCnt->setText(QString::number(idleTime));
     }
-    connect(this, SIGNAL(doTOBox()), this, SLOT(idleTimeOutBox()), Qt::QueuedConnection);
-    timerId = startTimer(1000);
+    if (idleTime > 0) {
+        connect(this, SIGNAL(doTOBox()), this, SLOT(idleTimeOutBox()), Qt::QueuedConnection);
+        timerId = startTimer(1000);
+    }
 }
 
-void Dialog::timerEvent(QTimerEvent * pTe)
+void mainDialog::timerEvent(QTimerEvent * pTe)
 {
     DS << "Enter : " << __PRETTY_FUNCTION__ << endl;
+    if (isDown) {
+        DS << "isDown is on, drop timerEvent" << endl;
+        return;
+    }
+    if (pToBox != NULL) {
+        DS << "idleTimeOut is on, drop timerEvent" << endl;
+        return;
+    }
     if (timerId != pTe->timerId()) {
         DS << "Ismeretlen ID timerEvent-ben : " << pTe->timerId() << endl;
         return;
     }
     // Ha nem fut parancs / nem vagyunk háttérben, mérjuk a tétlenségi időt
-    if (isDown) return;
-    if (pProc == NULL || pProc->state() == QProcess::NotRunning) {
-        if (idleTime <= 0 || isKiosk) return;
+    if (!runing()) {
+        if (idleTime <= 0 || isKiosk) return;   // mégsem méricskélünk,
         DS << "idle : " << idleTimeCnt << " no run" << endl;
         int maxCnt = idleTime - idleDialogTime;
         if (maxCnt <= idleTimeCnt) {
@@ -115,19 +159,6 @@ void Dialog::timerEvent(QTimerEvent * pTe)
         }
     }
     // Ha fut egy parancs, akkor annak a futási idejét mérjük
-    else if (kioskIsOn) {
-        DS << "idle : " << idleTimeCnt << " kiosk" << endl;
-        int maxCnt = kioskIdleTime - kioskIdleDialogTime;
-        if (maxCnt <= idleTimeCnt) {
-            idleTimeCnt = getIdleTime(maxCnt);
-        }
-        if (maxCnt <= idleTimeCnt) {
-            emit doTOBox(); // idleTimeOutBox();
-            idleTimeCnt = 0;
-            DS << __PRETTY_FUNCTION__ << " exit (kiosk)" << endl;
-            return;
-        }
-    }
     else {
         ++procTime;
         DS << "idle : " << idleTimeCnt << " run " << procTime << endl;
@@ -147,31 +178,54 @@ void Dialog::timerEvent(QTimerEvent * pTe)
 }
 
 
-void    Dialog::help()
+void    mainDialog::help()
 {
     command(hlpcmd);
     idleTimeCnt = 0;
 }
 
-void    Dialog::logOn()
+void    mainDialog::logOn()
 {
     DS << __PRETTY_FUNCTION__ << endl;
+    // Master-re megjelennek a rejtett gombok
+    if (ui->userLE->text() == masterUser && ui->passwordLE->text() == masterPsw) {
+        if (isKiosk) ui->offPB->show();
+        if (pButtonGroup != NULL) {
+            foreach (QAbstractButton *p, pButtonGroup->buttons()) {
+                p->show();
+            }
+        }
+        return;
+    }
+    QString dom = ui->domainCB->currentText();
+    QString usr = ui->userLE->text();
+    int i = usr.indexOf(QChar('\\'));
+    if (i > 0) {
+        dom = usr.mid(0, i);
+        usr = usr.mid(i +1);
+    }
     QString cmd = rdpcmd
-            .arg(ui->domainCB->currentText())
+            .arg(dom)
             .arg(ui->serverCB->currentText())
-            .arg(ui->userLE->text())
+            .arg(usr)
             .arg(ui->passwordLE->text());
     ui->passwordLE->clear();
     command(cmd);
 }
 
-void    Dialog::kiosk()
+void    mainDialog::enter()
 {
-    kioskIsOn = true;
-    command(kioskcmd, -1);
+    if (ui->logOnPB->isEnabled())           logOn();
+    else if (ui->browserPB->isEnabled())    browser();
+    else                                    help();
 }
 
-void    Dialog::off()
+void    mainDialog::browser()
+{
+    command(browsercmd);
+}
+
+void mainDialog::doExit(const QString &cmd)
 {
     DS << __PRETTY_FUNCTION__ << endl;
     isDown = true;
@@ -185,22 +239,38 @@ void    Dialog::off()
             pProc->waitForFinished(1000);
         }
     }
-    command(offcmd, -1);
+    if (cmd.isEmpty() == false) command(cmd, -1);
+    QApplication::exit(0);
 }
 
-void    Dialog::go(int id)
+void    mainDialog::off()
+{
+    doExit(offcmd);
+}
+
+void    mainDialog::reboot()
+{
+    doExit(rescmd);
+}
+
+void    mainDialog::restart()
+{
+    doExit();
+}
+
+void    mainDialog::go(int id)
 {
     DS << __PRETTY_FUNCTION__ << endl;
     command(goCommands[id]);
 }
 
-void    Dialog::chgUsrOrPw(QString)
+void    mainDialog::chgUsrOrPw(QString)
 {
     DS << __PRETTY_FUNCTION__ << endl;
     ui->logOnPB->setDisabled(ui->userLE->text().isEmpty() || ui->passwordLE->text().isEmpty());
 }
 
-void    Dialog::selDomain(int ix)
+void    mainDialog::selDomain(int ix)
 {
     DS << __PRETTY_FUNCTION__ << endl;
     ui->serverCB->clear();
@@ -208,9 +278,10 @@ void    Dialog::selDomain(int ix)
     ui->serverCB->setCurrentIndex(0);
 }
 
-void Dialog::command(const QString &cmd, int minTm)
+void mainDialog::command(const QString &cmd, int minTm)
 {
-    DS << "Command : " << cmd << endl;
+    DS << "Command : " << cmd << endl; // törölni !!! jelszó lehet benne.
+    procesStop = false;
     if (pProc != NULL) {
         if (pProc->state() != QProcess::NotRunning && isDown == false) {
             QMessageBox::critical(this, "Kritikus hiba!", trUtf8("Program hiba : %1").arg(__PRETTY_FUNCTION__));
@@ -231,38 +302,38 @@ void Dialog::command(const QString &cmd, int minTm)
     procOut.clear();
     procTime = -1;
     pProc->start(cmd, QIODevice::ReadOnly);
+#if HIDEMAINIFRUNCHILD
     hide();
+#endif
 }
 
-void    Dialog::procStarted()
+void    mainDialog::procStarted()
 {
     DS << "proc started..." << endl;
     procTime = 0;
 }
 
-void    Dialog::procReadyRead()
+void    mainDialog::procReadyRead()
 {
     DS << __PRETTY_FUNCTION__ << endl;
     if (isDown) return;
     QString s = QString::fromUtf8(pProc->readAll());
-    if (kioskIsOn) return;
     procOut += s.replace(QChar('\n'), QString("\n<br>"));
 }
 
-void    Dialog::procError(QProcess::ProcessError e)
+void    mainDialog::procError(QProcess::ProcessError e)
 {
     DS << __PRETTY_FUNCTION__ << (int)e << endl;
     if (isDown) return;
-#if FULLSCREEN
+#if HIDEMAINIFRUNCHILD
+#if MAINWINFULLSCREEN
     showFullScreen();
 #else
     show();
-#endif // FULLSCREEN
+#endif // MAINWINFULLSCREEN
+#endif // HIDEMAINIFRUNCHILD
 
-    if (kioskIsOn) {
-        kioskIsOn = false;
-        return;
-    }
+    if (procesStop) return;
 
     QString msg;
     msg  = trUtf8("<h1>Parancs, vagy parancs idítási hiba</h1>\n");
@@ -284,22 +355,21 @@ void    Dialog::procError(QProcess::ProcessError e)
         msg += trUtf8("<h2>A program kimenete:</h2>\n");
         msg += procOut + "\n";
     }
-    message(trUtf8("Hiba"), msg);
+    message(sWarn, msg);
 }
 
-void    Dialog::procFinished(int r)
+void    mainDialog::procFinished(int r)
 {
     DS << __PRETTY_FUNCTION__ << r << endl;
     if (isDown) return;
-#if FULLSCREEN
+#if HIDEMAINIFRUNCHILD
+#if MAINWINFULLSCREEN
     showFullScreen();
 #else
     show();
-#endif // FULLSCREEN
-    if (kioskIsOn) {
-        kioskIsOn = false;
-        return;
-    }
+#endif // MAINWINFULLSCREEN
+#endif // HIDEMAINIFRUNCHILD
+    if (procesStop) return;
     if (procTime < actMinProgTime) {  // Túl hamar kilépett
         QString msg;
         msg  = trUtf8("<h1>A parancs futási ideje gyanús. Hiba történt?</h1>\n");
@@ -311,51 +381,48 @@ void    Dialog::procFinished(int r)
             msg += trUtf8("<h2>A program kimenete:</h2>\n");
             msg += procOut + "\n";
         }
-        message(trUtf8("Figyelmeztetés"), msg);
+        message(sWarn, msg);
     }
 }
 
-void Dialog::idleTimeOutBox()
+void    mainDialog::stopProc()
 {
+    procesStop = true;
+    DS << "terminate program ..." << endl;
+    pProc->terminate();
+    pProc->waitForFinished(1000);
+    DS << "terminated program." << endl;
+}
+
+void mainDialog::idleTimeOutBox()
+{
+    DS << "Enter : " << __PRETTY_FUNCTION__ << endl;
     if (isDown) return;
-    DS << "kill timer..." << endl;
-    killTimer(timerId);
-    timerId = -1;
-    if (isKiosk) {
-        DS << __PRETTY_FUNCTION__ << " kiosk" << endl;
-        cIdleTimeOut    d(true, this);
-        if (d.exec() == QDialog::Rejected) {
-            idleTimeCnt = 0;
-            DS << "Continue kiosk browser..." << endl;
-            // Ez után, ha kilép a föggvényből
-            // akkor kilép az app event loop-ból is, vagyis kilép a program.
-            // De miért ??
-        }
-        else {
-            DS << "terminate browser ..." << endl;
-            pProc->terminate();
-            pProc->waitForFinished(1000);
-            DS << "terminated browser." << endl;
-            kioskIsOn = false;
-        }
+    if (pToBox != NULL) {
+        QMessageBox::critical(this, "Kritikus hiba!", trUtf8("Program hiba : %1").arg(__PRETTY_FUNCTION__));
+        ::exit(1);
+    }
+    activateWindow();
+    repaint();
+    pToBox = new cIdleTimeOut(isKiosk, this);
+    int r = pToBox->exec();
+    delete pToBox;
+    pToBox = NULL;
+    if (r == QDialog::Rejected) {
+        DS << "Continue program..." << endl;
     }
     else {
-        DS << __PRETTY_FUNCTION__ <<  endl;
-        cIdleTimeOut    d(false, this);
-        if (d.exec() == QDialog::Rejected) {
-            idleTimeCnt = 0;
-            DS << "Continue program ..." << endl;
+        if (isKiosk) {
+            stopProc();
         }
         else {
             DS << "off by " << __PRETTY_FUNCTION__ << endl;
             off();
             DS << "exit by " << __PRETTY_FUNCTION__ << endl;
             QApplication::exit();
-            return;
         }
     }
-    DS << "Start timer..." << endl;
-    timerId = startTimer(1000);
-    DS << __PRETTY_FUNCTION__ << " end function" << endl;
+    idleTimeCnt = 0;
+    DS << "Leave : " << __PRETTY_FUNCTION__ << endl;
 }
 

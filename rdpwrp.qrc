@@ -8,5 +8,7 @@
         <file>images/web.ico</file>
         <file>images/windows.png</file>
         <file>images/info.ico</file>
+        <file>images/restart.ico</file>
+        <file>images/clean.ico</file>
     </qresource>
 </RCC>

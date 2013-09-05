@@ -18,7 +18,7 @@ BISONSOURCES += config.yy
 DEPENDPATH   += $$TARGETPATH
 
 OTHER_FILES += $$BISONSOURCES
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,11 +29,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         dialog.cpp \
     idletimeout.cpp \
-    idletime.cpp
+    idletime.cpp \
+    tftp.cpp
 
 HEADERS  += dialog.h \
     idletimeout.h \
-    main.h
+    main.h \
+    tftp.h
 
 FORMS    += dialog.ui \
     idletimeout.ui

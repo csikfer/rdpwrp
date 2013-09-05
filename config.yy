@@ -7,13 +7,13 @@ QString             yyLastLine;
 int                 yyLineNo;
 QString             yyLine;
 static QStack<QChar> yyUnGetChars;
-static QFile       *yyFile = NULL;
+static QIODevice   *yyFile = NULL;
 
 static int yyparse();
 
-int parseConfig(QFile *_in)
+int parseConfig(QIODevice *_in)
 {
-    yyFile = _in;;
+    yyFile = _in;
     yyLastError.clear();
     yyLine.clear();
     yyUnGetChars.clear();
@@ -56,24 +56,30 @@ static int yylex(void);
 %}
 
 %union {
-    void *          u;
-    qlonglong       i;
-    bool            b;
-    QString *       s;
-    QStringList *  sl;
+    void *              u;
+    qlonglong           i;
+    bool                b;
+    QString *           s;
+    QStringList *      sl;
+    QStringPair *      sp;
+    QStringPairList*  spl;
 }
 
 %token      DOMAIN_T RDP_T OFF_T HELP_T COMMAND_T APP_T
 %token      IDLE_T DIALOG_T TIME_T MIN_T RUN_T WEB_T KIOSK_T
-%token      RESTART_T
+%token      RESTART_T NO_T MODE_T CLEAN_T INFO_T BROWSER_T
+%token      MASTER_T USER_T
 
 %token <i>  INTEGER_V
 %token <s>  STRING_V NAME_V
 
 %type  <i>  int int_z
 %type  <s>  str cmd icon
+%type <sp>  server domain
+%type <spl> servers
+/*
 %type <sl>  strs
-
+*/
 %%
 
 conf    : configs
@@ -81,42 +87,55 @@ conf    : configs
 configs : config
         | config configs
         ;
-config  : DOMAIN_T str '{' strs '}'         { Dialog::addDomain($2, $4); }
-        | RDP_T COMMAND_T str ';'           { Dialog::setRdpCmd($3); }
-        | OFF_T COMMAND_T str ';'           { Dialog::setOffCmd($3); }
-        | RESTART_T COMMAND_T str ';'       { Dialog::setResCmd($3); }
-        | HELP_T COMMAND_T str ';'          { Dialog::setHelpCmd($3); }
+config  : DOMAIN_T domain '{' servers '}'   { mainDialog::addDomain($2, $4); }
+        | RDP_T COMMAND_T str ';'           { mainDialog::setRdpCmd($3); }
+        | OFF_T COMMAND_T str ';'           { mainDialog::setOffCmd($3); }
+        | RESTART_T COMMAND_T str ';'       { mainDialog::setResCmd($3); }
+        | HELP_T COMMAND_T str ';'          { mainDialog::setHelpCmd($3); }
         | IDLE_T TIME_T int ';'             { idleTime  = $3; }
         | IDLE_T DIALOG_T TIME_T int ';'    { idleDialogTime  = $4; }
         | MIN_T RUN_T TIME_T int ';'        { minProgTime = $4; }
-        | COMMAND_T str cmd icon int_z ';'  { Dialog::addCommand($2, $3, $4, $5); }
-        | KIOSK_T COMMAND_T str ';'         { Dialog::setKioskCmd($3); }
-        | KIOSK_T IDLE_T TIME_T int ';'     { kioskIdleTime  = $4; }
-        | KIOSK_T IDLE_T DIALOG_T TIME_T int ';' { kioskIdleDialogTime  = $5; }
+        | COMMAND_T str cmd icon int_z ';'  { mainDialog::addCommand($2, $3, $4, $5); }
+        | BROWSER_T COMMAND_T str ';'       { mainDialog::setBrowserCmd($3); }
+        | NO_T KIOSK_T MODE_T ';'           { isKiosk = false; }
+        | KIOSK_T MODE_T ';'                { isKiosk = true; }
+        | MASTER_T USER_T str ',' str ';'   { mainDialog::setMaster($3, $5); }
         ;
 str     : NAME_V        { $$ = $1; }
         | STRING_V      { $$ = $1; }
         ;
+/*
 strs    : str           { $$ = new QStringList(*$1); delete $1; }
         | strs  str     { $$ = $1; *$$ << *$2; delete $2; }
         ;
+*/
 int     : INTEGER_V     { $$ = $1; }
         ;
 int_z   : int           { $$ = $1; }
         |               { $$ = -1; }
         ;
 cmd     : str           { $$ = $1; }
-        | HELP_T        { $$ = new QString(Dialog::getRdpCmd()); }
-        | OFF_T         { $$ = new QString(Dialog::getOffCmd()); }
-        | RESTART_T     { $$ = new QString(Dialog::getResCmd()); }
+        | HELP_T        { $$ = new QString(mainDialog::getRdpCmd()); }
+        | OFF_T         { $$ = new QString(mainDialog::getOffCmd()); }
+        | RESTART_T     { $$ = new QString(mainDialog::getResCmd()); }
         ;
 icon    : str           { $$ = $1; }
         | HELP_T        { $$ = new QString(":/images/help.ico"); }
         | WEB_T         { $$ = new QString(":/images/web.ico"); }
-        | KIOSK_T       { $$ = new QString(":/images/info.ico"); }
+        | INFO_T        { $$ = new QString(":/images/info.ico"); }
         | OFF_T         { $$ = new QString(":/images/off.ico"); }
+        | RESTART_T     { $$ = new QString(":/images/reboot.ico"); }
+        | CLEAN_T       { $$ = new QString(":/images/clean.ico"); }
         | APP_T         { $$ = new QString(":/images/app.ico"); }
         |               { $$ = new QString(":/images/app.ico"); }
+        ;
+servers : server            { *($$ = new QStringPairList()) << *$1; delete $1; }
+        | servers server    { *($$ = $1)                    << *$2; delete $2; }
+        ;
+server  : domain ';'        { $$ = $1; }
+        ;
+domain  : str               { $$ = new QStringPair(*$1, QString()); delete $1; }
+        | str ',' str       { $$ = new QStringPair(*$1, *$3); delete $1; delete $3; }
         ;
 %%
 
@@ -188,14 +207,15 @@ static int yylex(void)
     } sToken[] = {
         TOK(DOMAIN) TOK(RDP) TOK(OFF) TOK(HELP) TOK(COMMAND) TOK(APP)
         TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB) TOK(KIOSK)
-        TOK(RESTART)
+        TOK(RESTART) TOK(NO) TOK(MODE) TOK(CLEAN) TOK(INFO) TOK(BROWSER)
+        TOK(MASTER) TOK(USER)
         { NULL, 0 }
     };
     bool ok;
     // DBGFN();
     yylval.u = NULL;
     QChar     c;
-    // Elvalaszto karakterek és kommentek atlepese
+    // Elvalaszto karakterek és kommentek (#) tlepese
     // Fajl vege eseten vege
     while((c = yyget()).isNull() || c.isSpace() || c == QChar('\n') || c == QChar('#')) {
         if (c.isNull()) return 0;   // EOF, vége

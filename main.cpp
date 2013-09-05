@@ -1,11 +1,13 @@
 #include "dialog.h"
 #include <stdio.h>
 #include <QDesktopWidget>
+#include "tftp.h"
 
 QTextStream *pDS = NULL;
 int idleTimeCnt = 0;
 QString sSugg;
 QString sCrit;
+QString sWarn;
 QString hostname;
 bool    isDown  = false;
 bool    isKiosk = false;
@@ -14,17 +16,29 @@ int     desktopHeiht, desktopWidth;
 int idleTime        = IDLETIME;
 int idleDialogTime  = IDLEDIALOGTIME;
 int minProgTime     = MINPRCTM;
-int kioskIdleTime   = KIOSKIDLETIME;
-int kioskIdleDialogTime = KIOSKIDLEDIALOGTIME;
-bool kioskIsOn = false;
+
+inline void critical(QString msg)
+{
+    QMessageBox::critical(NULL, sCrit, msg + sSugg);
+    ::exit(1);
+}
+
+inline QString nextArg(int& i)
+{
+    ++i;
+    if (QApplication::arguments().size() <= i) critical(QObject::trUtf8("Hiányos atgumentum lista."));
+    return QApplication::arguments().at(i);
+}
 
 int main(int argc, char *argv[])
 {
     //QMyApplication a(argc, argv);
     QApplication a(argc, argv);
+    // a.setQuitOnLastWindowClosed(false);
 
     sSugg = QObject::trUtf8("<br>Kérem forduljon a rendszergazdához!");
     sCrit = QObject::trUtf8("Végzetes hiba!");
+    sWarn = QObject::trUtf8("Figyelmeztetés");
     desktopHeiht = QApplication::desktop()->height();
     desktopWidth = QApplication::desktop()->width();
     {
@@ -36,52 +50,83 @@ int main(int argc, char *argv[])
             hostname = QObject::trUtf8("Ismeretlen");
         }
     }
-#ifdef __DEBUG
+#if __DEBUG
     pDS = new QTextStream(stderr, QIODevice::WriteOnly);
-    // TEST
-    QString arg1;
-    if (argc > 1) arg1 = argv[1];
-    if (arg1 == QString("get-idle")) {
-        int test = getIdleTime();
-        DS << "idle time : " << test << endl;
-        ::exit(0);
-    }
-    // END TEST
-#else
+#if 0  // TEST
+    DS << "args : " << QApplication::arguments().join(",") << endl;
+    int test = getIdleTime();
+    DS << "idle time : " << test << endl;
+    ::exit(0);
+#endif // END TEST
+#else // __DEBUG
     pDS = new QTextStream(fopen("/dev/null", "w"), QIODevice::WriteOnly);
-#endif
+#endif // __DEBUG
 
-    Dialog w;
+    QString confName = "rdpwrp.conf";
+    QString tftpName;
+    int n = QApplication::arguments().size();
 
-    QFile    fconf(QString("./.%1.conf").arg(STR(APPNAME)));
-
-    if (!fconf.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(NULL, sCrit, QObject::trUtf8("A konfigurációs fájl nem olvasható, vagy nem létezik.") + sSugg);
-        ::exit(1);
+    for (int i = 0; i < n; ++i) {
+        QString arg = QApplication::arguments().at(i);
+        if      (arg == "-c") confName     = nextArg(i);
+        else if (arg == "-t") tftpName     = nextArg(i);
+        else if (arg == "-l") localAddrStr = nextArg(i);
+        else if (arg == "-4") ipProto = QAbstractSocket::IPv4Protocol;
+        else if (arg == "-6") ipProto = QAbstractSocket::IPv6Protocol;
     }
-    if (0 != parseConfig(&fconf)) {
+
+    QIODevice *pIn      = NULL;
+    QByteArray*pInArray = NULL;
+
+    if (tftpName.isEmpty()) {  // Lokális konfig
+        pIn = new QFile(confName);
+    }
+    else {                      // Konfig egy tftp szerverről
+        QTFtpClient tftp(tftpName);
+        if (!tftp) critical(tftp.lastError());
+        pInArray = new QByteArray;
+        if (!tftp.getByteArray(confName, pInArray)) critical(tftp.lastError());
+        pIn = new QBuffer(pInArray);
+    }
+    if (!pIn->open(QIODevice::ReadOnly)) {
+        critical(QObject::trUtf8("A konfigurációs fájl %1, nem olvasható, vagy nem létezik.").arg(confName));
+    }
+    pIn->seek(0);
+
+    mainDialog w;
+
+    if (0 != parseConfig(pIn)) {
         const QString br = "<br>";
         QString msg = QObject::trUtf8("A konfigurációs állomány tartalma nem értelmezhető.");
+        if (tftpName.isEmpty() == false) confName = tftpName + QChar(':') + confName;
         msg += QObject::trUtf8("<br>A %1 állomány %2 sor %3 oszlopában :")
-                .arg(fconf.fileName())
+                .arg(confName)
                 .arg(yyLineNo)
                 .arg(yyLastLine.size() - yyLine.size());
         msg += br + yyLastError;
         msg += br + QObject::trUtf8("A hibás szöveg sor:");
         msg += br + "<i>" + yyLastLine + "</i>";
-        msg += sSugg;
-        QMessageBox::critical(NULL, sCrit,  msg);
-        ::exit(1);
+        critical(msg);
     }
+    delete pIn;
+    if (pInArray != NULL) delete pInArray;
+
     w.set();
-#if FULLSCREEN
-    w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-    w.showFullScreen();
-#else
-    w.show();
-#endif // FULLSCREEN
-    int r = a.exec();
-    DS << "exit loop : " << r << endl;
+    int r;
+    while(!isDown) {
+        if (!w.runing()) {
+#if       MAINWINFULLSCREEN
+            w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+            w.showFullScreen();
+#else  // MAINWINFULLSCREEN
+            w.show();
+#endif // MAINWINFULLSCREEN
+        }
+        DS << "start event loop : " << endl;
+        r = a.exec();
+        DS << "exit event loop : " << r << endl;
+    };
+    if (w.runing()) w.stopProc();
     return r;
 }
 
@@ -127,7 +172,7 @@ void    msgBox::timerEvent(QTimerEvent *)
 
 void message(const QString& _t, const QString& _m)
 {
-    Dialog *p = Dialog::pItem;
+    mainDialog *p = mainDialog::pItem;
     msgBox *m = new msgBox(p);
     m->setWindowTitle(_t);
     m->setText(_m);

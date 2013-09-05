@@ -18,34 +18,37 @@
 #define _STR(s) #s
 #define STR(s)  _STR(s)
 
-#define FULLSCREEN 0
-#define __DEBUG
+/// Ha értéke nem nulla, akkor a main window teljes képernyős
+/// Tesztelésnél praktikusan legyen nulla
+#define MAINWINFULLSCREEN 0
+/// Ha értéke nem nulla, akkor program indításakor a fő ablakot láthatatlanná teszi
+#define HIDEMAINIFRUNCHILD 1
+/// Ha értéke nem nulla , akkor a debug üzenetek kiíródnak, egyébként a /dev/null -ba mennek.
+#define __DEBUG 1
 extern QTextStream *pDS;
+/// debug stream
 #define DS *pDS
 
 /// Ha nincs mozgás, akkor ennyi másodperc után kikapcsol, alapértelmezett érték
 #define IDLETIME        300
 /// Ha nincs mozgás, akkor ennyi másodperc után kikapcsol
 extern int idleTime;
-/// A kikapcsolásra figyelmeztető ablak eddig aktív, aztán kikapcs
+/// A kikapcsolásra figyelmeztető ablak eddig aktív, aztán kikapcs/alaphelyzet
 #define IDLEDIALOGTIME   60
-/// A kikapcsolásra figyelmeztető ablak eddig aktív, aztán kikapcs, alapértelmezett érték
+/// A kikapcsolásra figyelmeztető ablak eddig aktív, aztán kikapcs/alaphelyzet, alapértelmezett érték
 extern int idleDialogTime;
 /// Ha a hívott program futási ideje ennél rövidebb, akkor gyanús, alapértelmezett érték kezdő értéke
-#define MINPRCTM         10
+#define MINPRCTM         5
 /// Ha a hívott program futási ideje ennél rövidebb, akkor gyanús, alapértelmezett érték
 extern int minProgTime;
 
 /// Idle time counter
 extern int idleTimeCnt;
-#define KIOSKIDLETIME 120
-extern int kioskIdleTime;
-#define KIOSKIDLEDIALOGTIME 30
-extern int kioskIdleDialogTime;
-extern bool kioskIsOn;
 
 extern QString sSugg;
 extern QString sCrit;
+extern QString sWarn;
+
 extern QString hostname;
 extern int     desktopHeiht, desktopWidth;
 
@@ -56,7 +59,7 @@ extern QString             yyLastError;
 extern QString             yyLastLine;
 extern int                 yyLineNo;
 extern QString             yyLine;
-extern int parseConfig(QFile *_in);
+extern int parseConfig(QIODevice *_in);
 
 /* // Az idletime() ezt kiváltja
 class QMyApplication : public QApplication

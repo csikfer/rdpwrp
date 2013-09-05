@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>idleTimeOut</class>
  <widget class="QDialog" name="idleTimeOut">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,6 +12,9 @@
     <width>391</width>
     <height>419</height>
    </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Figyelmeztetés</string>
