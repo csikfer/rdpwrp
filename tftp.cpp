@@ -27,7 +27,7 @@ static QString dump(QByteArray& b)
 #define LOCALUDPPORT    12345
 
 QString localAddrStr;
-enum QAbstractSocket::NetworkLayerProtocol ipProto = QAbstractSocket::IPv4Protocol;
+enum QAbstractSocket::NetworkLayerProtocol ipProto = QAbstractSocket::UnknownNetworkLayerProtocol;
 
 QTFtpClient::QTFtpClient(QString remoteAddressString, int port)
     : lastErrorString(), localAddr(), remoteAddr()
@@ -43,8 +43,19 @@ QTFtpClient::QTFtpClient(QString remoteAddressString, int port)
     if (localAddrStr.isEmpty()) {
         QList<QHostAddress>  aa = QNetworkInterface::allAddresses();
         foreach (QHostAddress a, aa) {
-            if (a.isNull() || a.isLoopback() || a.protocol() != ipProto) continue;
+            if (a.isNull()) continue;
+            if (ipProto != QAbstractSocket::UnknownNetworkLayerProtocol) {
+                if (ipProto != a.protocol()) continue;
+            }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            if (a.isLoopback()) continue;
+#else
+            QString as = a.toString();
+            if (as.indexOf("127.") == 0) continue;
+            if (as == "::1") continue;
+#endif
             localAddr = a;
+            break;
         }
         if (localAddr.isNull()) {
             lastErrorString = QObject::trUtf8("Nem állapítható meg a saját gép ip címe");
