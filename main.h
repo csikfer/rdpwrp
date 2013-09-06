@@ -20,11 +20,11 @@
 
 /// Ha értéke nem nulla, akkor a main window teljes képernyős
 /// Tesztelésnél praktikusan legyen nulla
-#define MAINWINFULLSCREEN 0
+#define MAINWINFULLSCREEN 1
 /// Ha értéke nem nulla, akkor program indításakor a fő ablakot láthatatlanná teszi
-#define HIDEMAINIFRUNCHILD 1
+#define HIDEMAINIFRUNCHILD 0
 /// Ha értéke nem nulla , akkor a debug üzenetek kiíródnak, egyébként a /dev/null -ba mennek.
-#define __DEBUG 1
+#define __DEBUG 0
 extern QTextStream *pDS;
 /// debug stream
 #define DS *pDS
