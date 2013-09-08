@@ -14,7 +14,7 @@ bison.CONFIG += target_predeps
 bison.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += bison
 
-BISONSOURCES += config.yy
+BISONSOURCES += parser.yy
 DEPENDPATH   += $$TARGETPATH
 
 OTHER_FILES += $$BISONSOURCES
@@ -30,12 +30,15 @@ SOURCES += main.cpp\
         dialog.cpp \
     idletimeout.cpp \
     idletime.cpp \
-    tftp.cpp
+    tftp.cpp \
+    control.cpp
 
 HEADERS  += dialog.h \
     idletimeout.h \
     main.h \
-    tftp.h
+    tftp.h \
+    control.h \
+    parser.h
 
 FORMS    += dialog.ui \
     idletimeout.ui

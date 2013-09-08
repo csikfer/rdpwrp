@@ -103,6 +103,8 @@ public:
     static const QString& getOffCmd()       { _GET(offcmd); }
     static const QString& getResCmd()       { _GET(rescmd); }
     static const QString& getHelpCmd()      { _GET(hlpcmd); }
+
+    static const QProcess *getProcess()     { return pItem->pProc; }
 private:
     void doExit(const QString& cmd = QString());
     inline QFrame *hLine();

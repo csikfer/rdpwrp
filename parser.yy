@@ -1,13 +1,17 @@
 %{
 #include "dialog.h"
+#include "control.h"
+#include "parser.h"
 #include <QStack>
 
 QString             yyLastError;
 QString             yyLastLine;
 int                 yyLineNo;
 QString             yyLine;
+
 static QStack<QChar> yyUnGetChars;
 static QIODevice   *yyFile = NULL;
+static QIODevice   *yyOutF = NULL;
 
 static int yyparse();
 
@@ -17,9 +21,27 @@ int parseConfig(QIODevice *_in)
     yyLastError.clear();
     yyLine.clear();
     yyUnGetChars.clear();
+    yyUnGetChars << QChar(' ') << QChar('@');   // Config parser
     yyLineNo = 0;
     int r = yyparse();
     yyFile = NULL;
+    return r;
+}
+
+int parseCommand(QByteArray& _in, QByteArray& _out)
+{
+    yyFile = new QBuffer(&_in);
+    _out.clear();
+    yyOutF = new QBuffer(&_out);;
+    yyLastError.clear();
+    yyLine.clear();
+    yyUnGetChars.clear();
+    yyUnGetChars << QChar(' ') << QChar('!');   // Command parser
+    yyLineNo = 0;
+    int r = yyparse();
+    delete yyFile;
+    delete yyOutF;
+    yyOutF = yyFile = NULL;
     return r;
 }
 
@@ -70,6 +92,8 @@ static int yylex(void);
 %token      RESTART_T NO_T MODE_T CLEAN_T INFO_T BROWSER_T
 %token      MASTER_T USER_T
 
+%token      PING_T
+
 %token <i>  INTEGER_V
 %token <s>  STRING_V NAME_V
 
@@ -82,8 +106,10 @@ static int yylex(void);
 */
 %%
 
-conf    : configs
+main    : '@' configs
+        | '!' cmds
         ;
+/* Config parser */
 configs : config
         | config configs
         ;
@@ -136,6 +162,16 @@ server  : domain ';'        { $$ = $1; }
         ;
 domain  : str               { $$ = new QStringPair(*$1, QString()); delete $1; }
         | str ',' str       { $$ = new QStringPair(*$1, *$3); delete $1; delete $3; }
+        ;
+/* Command parser */
+cmds    : command
+        | command ';' cmds
+        ;
+command : PING_T            { cCntrl::_ok(); }
+        | OFF_T             { cCntrl::_command(mainDialog::getOffCmd()); }
+        | RESTART_T         { cCntrl::_command(mainDialog::getResCmd()); }
+        | COMMAND_T str     { cCntrl::command($2); }
+        | RUN_T             { cCntrl::getRun($2); }
         ;
 %%
 
@@ -200,7 +236,7 @@ static QString *yygetstr()
 #define TOK(t)  { #t, t##_T },
 static int yylex(void)
 {
-    static const char cToken[] = "{};,";
+    static const char cToken[] = "@!{};,";
     static const struct token {
         const char *name;
         int         value;
@@ -209,6 +245,7 @@ static int yylex(void)
         TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB) TOK(KIOSK)
         TOK(RESTART) TOK(NO) TOK(MODE) TOK(CLEAN) TOK(INFO) TOK(BROWSER)
         TOK(MASTER) TOK(USER)
+        TOK(PING)
         { NULL, 0 }
     };
     bool ok;

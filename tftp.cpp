@@ -16,7 +16,7 @@ static QString dump(QByteArray& b)
     return r + QChar('"');
 }
 #else //__DEBUG
-static QString dump(QByteArray& b)
+static QString dump(QByteArray&)
 {
     return QString();
 }
@@ -26,11 +26,10 @@ static QString dump(QByteArray& b)
 /// igazándiból keresni kéne egy szabad portot, de hogyan ?
 #define LOCALUDPPORT    12345
 
-QString localAddrStr;
 enum QAbstractSocket::NetworkLayerProtocol ipProto = QAbstractSocket::UnknownNetworkLayerProtocol;
 
 QTFtpClient::QTFtpClient(QString remoteAddressString, int port)
-    : lastErrorString(), localAddr(), remoteAddr()
+    : lastErrorString(), remoteAddr()
 {
     socket = NULL;
     ctrlPort = port;
@@ -39,35 +38,6 @@ QTFtpClient::QTFtpClient(QString remoteAddressString, int port)
     if (remoteAddr.isNull()) {
         lastErrorString = QObject::trUtf8("Nem értelmezhető tftp szerver cím : %1").arg(remoteAddressString);
         return;
-    }
-    if (localAddrStr.isEmpty()) {
-        QList<QHostAddress>  aa = QNetworkInterface::allAddresses();
-        foreach (QHostAddress a, aa) {
-            if (a.isNull()) continue;
-            if (ipProto != QAbstractSocket::UnknownNetworkLayerProtocol) {
-                if (ipProto != a.protocol()) continue;
-            }
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-            if (a.isLoopback()) continue;
-#else
-            QString as = a.toString();
-            if (as.indexOf("127.") == 0) continue;
-            if (as == "::1") continue;
-#endif
-            localAddr = a;
-            break;
-        }
-        if (localAddr.isNull()) {
-            lastErrorString = QObject::trUtf8("Nem állapítható meg a saját gép ip címe");
-            return;
-        }
-    }
-    else {
-        localAddr.setAddress(localAddrStr);
-        if (localAddr.isNull()) {
-            lastErrorString = QObject::trUtf8("A megadott saját cím értelmezhetetlen : %1").arg(localAddrStr);
-            return;
-        }
     }
 }
 
@@ -261,7 +231,7 @@ bool QTFtpClient::getByteArray(QString filename, QByteArray *requestedFile)
                 // SEE IF WE RECEIVED A COMPLETE 512 BYTES AND IF SO,
                 // THEN THERE IS MORE INFORMATION ON THE WAY
                 // OTHERWISE, WE'VE REACHED THE END OF THE RECEIVING FILE
-                if (incomingByteArray.length() < MAXPACKETSIZE){
+                if (incomingByteArray.length() < TFTPMAXPACKETSIZE){
                     messageCompleteFlag=true;
                 }
 

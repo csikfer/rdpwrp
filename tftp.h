@@ -5,10 +5,9 @@
 
 #include <QtNetwork>
 
-#define MAXPACKETSIZE 512
+#define TFTPMAXPACKETSIZE 512
 #define TFTPUDPPORT    69
 
-extern QString localAddrStr;
 extern enum QAbstractSocket::NetworkLayerProtocol ipProto;
 
 class QTFtpClient {
@@ -29,7 +28,6 @@ private:
 
     QString lastErrorString;
     QUdpSocket *socket;
-    QHostAddress    localAddr;
     QHostAddress    remoteAddr;
     quint16         ctrlPort;
     quint16         dataPort;

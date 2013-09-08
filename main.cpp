@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <QDesktopWidget>
 #include "tftp.h"
+#include "control.h"
+#include "parser.h"
 
 QTextStream *pDS = NULL;
 int idleTimeCnt = 0;
@@ -9,6 +11,8 @@ QString sSugg;
 QString sCrit;
 QString sWarn;
 QString hostname;
+QString localAddrStr;
+QHostAddress localAddr;
 bool    isDown  = false;
 bool    isKiosk = false;
 int     desktopHeiht, desktopWidth;
@@ -17,17 +21,51 @@ int idleTime        = IDLETIME;
 int idleDialogTime  = IDLEDIALOGTIME;
 int minProgTime     = MINPRCTM;
 
-inline void critical(QString msg)
-{
-    QMessageBox::critical(NULL, sCrit, msg + sSugg);
-    ::exit(1);
-}
-
 inline QString nextArg(int& i)
 {
     ++i;
-    if (QApplication::arguments().size() <= i) critical(QObject::trUtf8("Hiányos atgumentum lista."));
+    if (QApplication::arguments().size() <= i) critical(QObject::trUtf8("Hiányos argumentum lista."));
     return QApplication::arguments().at(i);
+}
+
+inline int nextArgUInt(int& i)
+{
+    bool ok = false ;
+    QString s = nextArg(i);
+    unsigned int r = s.toUInt(&ok);
+    if (!ok) critical(QObject::trUtf8("Nem numerikus argumentum : \"%1\"").arg(s));
+    return r;
+}
+
+static void setLocalAddr()
+{
+    if (localAddrStr.isEmpty()) {   // Nincs megadva lokális cím, kitaláljuk
+        QList<QHostAddress>  aa = QNetworkInterface::allAddresses();
+        foreach (QHostAddress a, aa) {
+            if (a.isNull()) continue;
+            if (ipProto != QAbstractSocket::UnknownNetworkLayerProtocol) {
+                if (ipProto != a.protocol()) continue;
+            }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            if (a.isLoopback()) continue;
+#else
+            QString as = a.toString();
+            if (as.indexOf("127.") == 0) continue;
+            if (as == "::1") continue;
+#endif
+            localAddr = a;
+            break;
+        }
+        if (localAddr.isNull()) {
+            critical(QObject::trUtf8("Nem állapítható meg a saját gép ip címe"));
+        }
+    }
+    else {
+        localAddr.setAddress(localAddrStr);
+        if (localAddr.isNull()) {
+            critical(QObject::trUtf8("A megadott saját cím értelmezhetetlen : %1").arg(localAddrStr));
+        }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -41,7 +79,12 @@ int main(int argc, char *argv[])
     sWarn = QObject::trUtf8("Figyelmeztetés");
     desktopHeiht = QApplication::desktop()->height();
     desktopWidth = QApplication::desktop()->width();
-    {
+    // Saját hoszt név
+    const char * pe = getenv("HOSTNAME");
+    if (pe == NULL) {
+        hostname = pe;
+    }
+    else {
         QFile   fhn("/etc/hostname");
         if (fhn.open(QIODevice::ReadOnly)) {
             hostname = fhn.readAll();
@@ -66,14 +109,18 @@ int main(int argc, char *argv[])
     QString tftpName;
     int n = QApplication::arguments().size();
 
+    // Program kapcsolók
     for (int i = 0; i < n; ++i) {
         QString arg = QApplication::arguments().at(i);
-        if      (arg == "-c") confName     = nextArg(i);
-        else if (arg == "-t") tftpName     = nextArg(i);
-        else if (arg == "-l") localAddrStr = nextArg(i);
-        else if (arg == "-4") ipProto = QAbstractSocket::IPv4Protocol;
-        else if (arg == "-6") ipProto = QAbstractSocket::IPv6Protocol;
+        if      (arg == "-c") confName     = nextArg(i);                // Konfig fájl neve
+        else if (arg == "-t") tftpName     = nextArg(i);                // tftp szerver címe, ahonnan a konfig letöltendő
+        else if (arg == "-l") localAddrStr = nextArg(i);                // saját cím
+        else if (arg == "-4") ipProto = QAbstractSocket::IPv4Protocol;  // csak IPV4 használata (ha nincs -l)
+        else if (arg == "-6") ipProto = QAbstractSocket::IPv6Protocol;  // csak IPV6 használata (ha nincs -l)
+        else if (arg == "-p") cmdPort = nextArgUInt(i);                 // UDP parancs port száma
     }
+
+    setLocalAddr();
 
     QIODevice *pIn      = NULL;
     QByteArray*pInArray = NULL;

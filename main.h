@@ -12,6 +12,7 @@
 #include <QProcess>
 #include <QMessageBox>
 #include <QButtonGroup>
+#include <QtNetwork>
 
 #define APPNAME rdpwrp
 
@@ -23,6 +24,7 @@
 #define MAINWINFULLSCREEN 1
 /// Ha értéke nem nulla, akkor program indításakor a fő ablakot láthatatlanná teszi
 #define HIDEMAINIFRUNCHILD 0
+
 /// Ha értéke nem nulla , akkor a debug üzenetek kiíródnak, egyébként a /dev/null -ba mennek.
 #define __DEBUG 0
 extern QTextStream *pDS;
@@ -50,16 +52,13 @@ extern QString sCrit;
 extern QString sWarn;
 
 extern QString hostname;
+extern QString localAddrStr;
+extern QHostAddress    localAddr;
+
 extern int     desktopHeiht, desktopWidth;
 
-extern bool    isDown;
-extern bool    isKiosk;
-
-extern QString             yyLastError;
-extern QString             yyLastLine;
-extern int                 yyLineNo;
-extern QString             yyLine;
-extern int parseConfig(QIODevice *_in);
+extern bool    isDown;      ///< Állapot jelző
+extern bool    isKiosk;     ///< Mód
 
 /* // Az idletime() ezt kiváltja
 class QMyApplication : public QApplication
@@ -88,5 +87,11 @@ private:
 extern void message(const QString& _t, const QString& _m);
 
 extern int getIdleTime(int _min = 0);
+
+inline void critical(QString msg)
+{
+    QMessageBox::critical(NULL, sCrit, msg + sSugg);
+    ::exit(1);
+}
 
 #endif // MAIN_H

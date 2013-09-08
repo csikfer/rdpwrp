@@ -2,7 +2,7 @@
 #include <QPushButton>
 #include "dialog.h"
 
-cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *parent) :
+cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *) :
     QDialog(),
     ui(new Ui::idleTimeOut)
 {
@@ -11,8 +11,8 @@ cIdleTimeOut::cIdleTimeOut(bool _kiosk, QWidget *parent) :
     ui->setupUi(this);
     setStyleSheet("background-color: yellow");
     if (_kiosk) {
-        ui->labelUp->setText(trUtf8("A böngésző auomatikusan ki fog lépni"));
-        ui->labelDown->setText(trUtf8("másodperc múlva.\n\nHa nem szertné, hogy a böngésző kilépjen,\nmegnyomhatja az ESC gombot is."));
+        ui->labelUp->setText(trUtf8("Az alkalmazás auomatikusan ki fog lépni"));
+        ui->labelDown->setText(trUtf8("másodperc múlva.\n\nHa nem szertné, hogy a kilépjen,\nmegnyomhatja az ESC gombot is."));
         ui->contPB->setText(trUtf8("Ne!"));
         ui->endPB->setText(trUtf8("Kilépés."));
         waitTime = idleDialogTime;
