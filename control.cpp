@@ -25,11 +25,12 @@ cCntrl::cCntrl()
 
 cCntrl::~cCntrl()
 {
-    ;
+    pItem = NULL;
 }
 
 void    cCntrl::execCtrlRCmd()
 {
+    DS << __PRETTY_FUNCTION__ << endl;
     while (pSock->hasPendingDatagrams()) {
         QHostAddress    remoteHost;
         quint16         remotePort;
@@ -41,11 +42,23 @@ void    cCntrl::execCtrlRCmd()
             continue;
         }
         QByteArray out;
-        int i = parseCommand(b, out);
-        out.prepend(QString("R:%1\n").arg(i).toUtf8());
-        if (out.size() > CTRLMAXPACKETSIZE) {
-            out.resize(CTRLMAXPACKETSIZE -1);
-            out.append('\\');
+        DS << "Received from " << remoteHost.toString() << ":" << QString::number(remotePort) << " : " << QString::fromUtf8(b) << endl;
+        if (0 == parseCommand(b, out)) {
+            out.prepend(QString("R:%1\n").arg(cmdRet).toUtf8());
+            if (out.size() > CTRLMAXPACKETSIZE) {
+                out.resize(CTRLMAXPACKETSIZE -1);
+                out.append('\\');
+            }
+        }
+        else {
+            QString msg;
+            msg += QObject::trUtf8("E:%1\nA %2 sor %3 oszlopában\n")
+                    .arg(yyLastError)
+                    .arg(yyLineNo)
+                    .arg(yyLastLine.size() - yyLine.size());
+            msg += QObject::trUtf8("A hibás szöveg sor : ");
+            msg += yyLastLine;
+            out = msg.toUtf8();
         }
         pSock->writeDatagram(out, remoteHost, remotePort);
     }
@@ -53,10 +66,11 @@ void    cCntrl::execCtrlRCmd()
 
 void cCntrl::_command(const QString& _cmd)
 {
+    DS << __PRETTY_FUNCTION__ << " _cmd = " << _cmd << endl;
     cmdRet = -1;
     QProcess    proc;
     proc.setProcessChannelMode(QProcess::MergedChannels);
-    proc.execute(_cmd);
+    proc.start(_cmd);
     if (proc.waitForStarted(cmdTo) && proc.waitForFinished(cmdTo)) {
         QByteArray o = proc.readAll();
         yyprint(o);
@@ -66,6 +80,7 @@ void cCntrl::_command(const QString& _cmd)
 
 void cCntrl::getRun()
 {
+    DS << __PRETTY_FUNCTION__ << endl;
     const QProcess *p = mainDialog::getProcess();
     if (p == NULL) yyprint("NULL\n");
     else {

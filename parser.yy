@@ -31,8 +31,11 @@ int parseConfig(QIODevice *_in)
 int parseCommand(QByteArray& _in, QByteArray& _out)
 {
     yyFile = new QBuffer(&_in);
+    yyFile->open(QIODevice::ReadOnly);
+    yyFile->seek(0);
     _out.clear();
     yyOutF = new QBuffer(&_out);;
+    yyOutF->open(QIODevice::WriteOnly);
     yyLastError.clear();
     yyLine.clear();
     yyUnGetChars.clear();
@@ -67,6 +70,7 @@ static QChar yyget()
     while (yyLine.isEmpty()) {
         ++yyLineNo;
         yyLastLine = yyLine  = QString::fromUtf8(yyFile->readLine());
+        DS << "yyget() line#" << yyLastLine << " : \"" << yyLastLine << "\"" << endl;
         if (yyLine.isEmpty() && yyFile->atEnd()) return 0;
     }
     QChar c = yyLine.at(0);

@@ -156,6 +156,9 @@ int main(int argc, char *argv[])
     if (pInArray != NULL) delete pInArray;
 
     w.set();
+
+    cCntrl  rControl;   // Távvezérlés indítása
+
     int r;
     while(!isDown) {
         if (!w.runing()) {

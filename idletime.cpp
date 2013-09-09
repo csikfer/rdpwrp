@@ -106,10 +106,10 @@ static QList<int> otherDisplays(int myDisplay, bool& ok)
 int getIdleTime(int _min)
 {
     DS << __PRETTY_FUNCTION__ << " _min : " << _min << endl;
-    QDateTime   now = QDateTime::currentDateTime();
     bool ok;
-    // Virtuális konzolokon mért idők
     int minIdleTime = INT_MAX;
+    // Virtuális konzolokon mért idők
+    QDateTime   now = QDateTime::currentDateTime();
     static  QDir *pDevDir = NULL;
     if (pDevDir == NULL) {
         pDevDir = new QDir("/dev");
@@ -120,7 +120,9 @@ int getIdleTime(int _min)
     }
     QFileInfoList fil = pDevDir->entryInfoList();
     foreach (QFileInfo fi, fil) {
-        minIdleTime = qMin(minIdleTime, (int)fi.lastModified().secsTo(now));
+        int it = (int)fi.lastModified().secsTo(now);
+        DS << "Console : " << fi.fileName() << " idle time " << it << endl;
+        minIdleTime = qMin(minIdleTime, it);
         if (minIdleTime < _min) {
             DS << __PRETTY_FUNCTION__ << " return : " << minIdleTime << " / " << fi.fileName() << endl;
             return minIdleTime;
