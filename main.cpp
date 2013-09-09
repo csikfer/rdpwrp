@@ -81,10 +81,7 @@ int main(int argc, char *argv[])
     desktopWidth = QApplication::desktop()->width();
     // Saját hoszt név
     const char * pe = getenv("HOSTNAME");
-    if (pe == NULL) {
-        hostname = pe;
-    }
-    else {
+    if (pe == NULL || (hostname = pe).isEmpty()) {
         QFile   fhn("/etc/hostname");
         if (fhn.open(QIODevice::ReadOnly)) {
             hostname = fhn.readAll();
