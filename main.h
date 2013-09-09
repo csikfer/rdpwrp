@@ -26,7 +26,7 @@
 #define HIDEMAINIFRUNCHILD 1
 
 /// Ha értéke nem nulla , akkor a debug üzenetek kiíródnak, egyébként a /dev/null -ba mennek.
-#define __DEBUG 0
+#define __DEBUG 1
 extern QTextStream *pDS;
 /// debug stream
 #define DS *pDS

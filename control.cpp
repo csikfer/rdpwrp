@@ -57,7 +57,7 @@ void cCntrl::_command(const QString& _cmd)
     QProcess    proc;
     proc.setProcessChannelMode(QProcess::MergedChannels);
     proc.execute(_cmd);
-    if (proc.waitForFinished(cmdTo)) {
+    if (proc.waitForStarted(cmdTo) && proc.waitForFinished(cmdTo)) {
         QByteArray o = proc.readAll();
         yyprint(o);
         cmdRet = proc.exitCode();
