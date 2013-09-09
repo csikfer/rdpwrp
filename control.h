@@ -14,15 +14,17 @@ public:
     cCntrl();
     ~cCntrl();
 private:
-    QUdpSocket      *pSock;
-    static cCntrl   *pItem;
+    QUdpSocket     *pSock;
+    static cCntrl  *pItem;
     static int      cmdRet;
+    static int      cmdTo;
 private slots:
     void    execCtrlRCmd();
 public:
     static void _command(const QString& _cmd);
     static void command(QString * _cmd) { _command(*_cmd); delete _cmd; }
     static void _ok()                   { cmdRet = 0; }
+    static void setCmdTo(int _to)       { cmdTo = _to; }
     static void getRun();
 };
 

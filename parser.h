@@ -12,4 +12,9 @@ extern QString             yyLine;      ///< A sorból még hátra lévő (feldo
 extern int parseConfig(QIODevice *_in);
 extern int parseCommand(QByteArray& _in, QByteArray& _out);
 
+void yyprint(const QByteArray& _o);
+inline void yyprint(const QString& _o)  { yyprint(_o.toUtf8()); }
+inline void yyprint(const char * _o)    { yyprint(QString(_o)); }
+
+
 #endif // PARSER_H

@@ -45,6 +45,11 @@ int parseCommand(QByteArray& _in, QByteArray& _out)
     return r;
 }
 
+void yyprint(const QByteArray& _o)
+{
+    yyOutF->write(_o);
+}
+
 static int yyerror(QString em)
 {
     yyLastError = em;
@@ -92,7 +97,7 @@ static int yylex(void);
 %token      RESTART_T NO_T MODE_T CLEAN_T INFO_T BROWSER_T
 %token      MASTER_T USER_T
 
-%token      PING_T
+%token      PING_T SET_T OUT_T
 
 %token <i>  INTEGER_V
 %token <s>  STRING_V NAME_V
@@ -171,7 +176,8 @@ command : PING_T            { cCntrl::_ok(); }
         | OFF_T             { cCntrl::_command(mainDialog::getOffCmd()); }
         | RESTART_T         { cCntrl::_command(mainDialog::getResCmd()); }
         | COMMAND_T str     { cCntrl::command($2); }
-        | RUN_T             { cCntrl::getRun($2); }
+        | RUN_T             { cCntrl::getRun(); }
+        | SET_T TIME_T OUT_T int    { cCntrl::setCmdTo($4); }
         ;
 %%
 
@@ -245,7 +251,7 @@ static int yylex(void)
         TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB) TOK(KIOSK)
         TOK(RESTART) TOK(NO) TOK(MODE) TOK(CLEAN) TOK(INFO) TOK(BROWSER)
         TOK(MASTER) TOK(USER)
-        TOK(PING)
+        TOK(PING) TOK(SET) TOK(OUT)
         { NULL, 0 }
     };
     bool ok;

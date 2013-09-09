@@ -5,6 +5,9 @@
 quint16     cmdPort = 22022;
 
 int cCntrl::cmdRet;
+int cCntrl::cmdTo = 5000;       // Command Time Out 5 sec
+cCntrl * cCntrl::pItem = NULL;
+
 
 cCntrl::cCntrl()
 {
@@ -50,13 +53,31 @@ void    cCntrl::execCtrlRCmd()
 
 void cCntrl::_command(const QString& _cmd)
 {
-    (void)_cmd;
+    cmdRet = -1;
+    QProcess    proc;
+    proc.setProcessChannelMode(QProcess::MergedChannels);
+    proc.execute(_cmd);
+    if (proc.waitForFinished(cmdTo)) {
+        QByteArray o = proc.readAll();
+        yyprint(o);
+        cmdRet = proc.exitCode();
+    }
 }
 
 void cCntrl::getRun()
 {
+    const QProcess *p = mainDialog::getProcess();
+    if (p == NULL) yyprint("NULL\n");
+    else {
+        QString o;
+        switch (p->state()) {
+        case QProcess::NotRunning:  o = "NOT RUNNING\n";    break;
+        case QProcess::Starting:    o = "STARTING\n";       break;
+        case QProcess::Running:     o = "RUNNING\n";        break;
+        default:                    o = "UNKNOWN\n";        break;
+        }
+        o += p->program() + "\n";
+        yyprint(o);
+    }
     cmdRet = 0;
-    const QProcess p = mainDialog::getProcess();
-    if (p == NULL) return;
-    s
 }
