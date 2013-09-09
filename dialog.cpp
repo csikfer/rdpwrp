@@ -204,7 +204,11 @@ void    mainDialog::logOn()
         dom = usr.mid(0, i);
         usr = usr.mid(i +1);
     }
-    QString cmd = rdpcmd
+    QString cmd = rdpcmd;
+    // Alternatív parancs
+    QString altCmd = rdpCmds.at(ui->serverCB->currentIndex()).at(ui->serverCB->currentIndex());
+    if (altCmd.isEmpty() == false) cmd = altCmd;
+    cmd = cmd
             .arg(dom)
             .arg(ui->serverCB->currentText())
             .arg(usr)

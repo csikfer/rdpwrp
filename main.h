@@ -23,7 +23,7 @@
 /// Tesztelésnél praktikusan legyen nulla
 #define MAINWINFULLSCREEN 1
 /// Ha értéke nem nulla, akkor program indításakor a fő ablakot láthatatlanná teszi
-#define HIDEMAINIFRUNCHILD 0
+#define HIDEMAINIFRUNCHILD 1
 
 /// Ha értéke nem nulla , akkor a debug üzenetek kiíródnak, egyébként a /dev/null -ba mennek.
 #define __DEBUG 0
