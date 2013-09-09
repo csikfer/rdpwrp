@@ -281,6 +281,9 @@ void    mainDialog::selDomain(int ix)
 void mainDialog::command(const QString &cmd, int minTm)
 {
     DS << "Command : " << cmd << endl; // törölni !!! jelszó lehet benne.
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    lastCmd = cmd;
+#endif
     procesStop = false;
     if (pProc != NULL) {
         if (pProc->state() != QProcess::NotRunning && isDown == false) {

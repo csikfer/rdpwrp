@@ -76,7 +76,8 @@ void cCntrl::getRun()
         case QProcess::Running:     o = "RUNNING\n";        break;
         default:                    o = "UNKNOWN\n";        break;
         }
-        o += p->program() + "\n";
+
+        o += mainDialog::getLastCmd() + "\n";
         yyprint(o);
     }
     cmdRet = 0;

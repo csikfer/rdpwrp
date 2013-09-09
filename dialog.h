@@ -109,6 +109,16 @@ private:
     void doExit(const QString& cmd = QString());
     inline QFrame *hLine();
     inline QPushButton *button(QString &txt, QString ico);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+protected:
+    QString     lastCmd;
+public:
+    static QString getLastCmd() { return pItem->lastCmd; }
+#else
+public:
+    static QString getLastCmd() { return pItem->pProc->program(); }
+public:
+#endif
 };
 
 #endif // DIALOG_H
