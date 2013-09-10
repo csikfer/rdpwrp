@@ -243,7 +243,7 @@ void mainDialog::doExit(const QString &cmd)
             pProc->waitForFinished(1000);
         }
     }
-    if (cmd.isEmpty() == false) command(cmd, -1);
+    if (cmd.isEmpty() == false) QProcess::execute(cmd);
     QApplication::exit(0);
 }
 
