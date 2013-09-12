@@ -57,7 +57,6 @@ void mainDialog::addDomain(QStringPair * pDom, QStringPairList *pServers)
     pItem->domains << pDom->first;
     QStringList srvs;
     QStringList cmds;
-    QString cmd = pDom->second;
     foreach (QStringPair ss, *pServers) {
         srvs << ss.first;
         cmds << (ss.second.isEmpty() ? pDom->second : ss.second);

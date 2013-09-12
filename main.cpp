@@ -21,6 +21,25 @@ int idleTime        = IDLETIME;
 int idleDialogTime  = IDLEDIALOGTIME;
 int minProgTime     = MINPRCTM;
 
+QString getKernelParamValue(const QString& name, const QString& def)
+{
+    QFile cmdline("/proc/cmdline");
+    if (cmdline.open(QIODevice::ReadOnly)) {
+        QString params = cmdline.readAll();
+        foreach (QString par, params.split(QChar(' '), QString::KeepEmptyParts)) {
+            QStringList nv = par.split(QChar('='));
+            if (nv.size() == 2 && nv.at(0) == name) {
+                DS << "Find pernel param : " << par << endl;
+                return nv.at(1);
+            }
+        }
+    }
+    else {
+        DS << "Nem tudom megnyitni a /proc/cmdline fájlt !!" << endl;
+    }
+    return def;
+}
+
 inline QString nextArg(int& i)
 {
     ++i;
@@ -102,10 +121,11 @@ int main(int argc, char *argv[])
     pDS = new QTextStream(fopen("/dev/null", "w"), QIODevice::WriteOnly);
 #endif // __DEBUG
 
-    QString confName = "rdpwrp.conf";
+    // Ha megadjuk kernel paraméterként az rdpwrp-ta akkor annak az értéke lessz a konfig állomány neve
+    // A -c pakcsoló fellülbírálja !
+    QString confName = getKernelParamValue(STR(APPNAME), STR(APPNAME) ".conf");
     QString tftpName;
     int n = QApplication::arguments().size();
-
     // Program kapcsolók
     for (int i = 0; i < n; ++i) {
         QString arg = QApplication::arguments().at(i);
