@@ -21,7 +21,7 @@
 
 /// Ha értéke nem nulla, akkor a main window teljes képernyős
 /// Tesztelésnél praktikusan legyen nulla
-#define MAINWINFULLSCREEN 1
+#define MAINWINFULLSCREEN 0
 /// Ha értéke nem nulla, akkor program indításakor a fő ablakot láthatatlanná teszi
 #define HIDEMAINIFRUNCHILD 1
 

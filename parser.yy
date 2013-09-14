@@ -41,6 +41,7 @@ int parseCommand(QByteArray& _in, QByteArray& _out)
     yyUnGetChars.clear();
     yyUnGetChars << QChar(' ') << QChar('!');   // Command parser
     yyLineNo = 0;
+    cCntrl::_ok();
     int r = yyparse();
     delete yyFile;
     delete yyOutF;
@@ -99,7 +100,7 @@ static int yylex(void);
 %token      DOMAIN_T RDP_T OFF_T HELP_T COMMAND_T APP_T
 %token      IDLE_T DIALOG_T TIME_T MIN_T RUN_T WEB_T KIOSK_T
 %token      RESTART_T NO_T MODE_T CLEAN_T INFO_T BROWSER_T
-%token      MASTER_T USER_T
+%token      MASTER_T USER_T COMMANDS_T
 
 %token      PING_T SET_T OUT_T
 
@@ -108,8 +109,8 @@ static int yylex(void);
 
 %type  <i>  int int_z
 %type  <s>  str cmd icon
-%type <sp>  server domain
-%type <spl> servers
+%type <sp>  server domain strpair
+%type <spl> servers strps
 /*
 %type <sl>  strs
 */
@@ -127,14 +128,17 @@ config  : DOMAIN_T domain '{' servers '}'   { mainDialog::addDomain($2, $4); }
         | OFF_T COMMAND_T str ';'           { mainDialog::setOffCmd($3); }
         | RESTART_T COMMAND_T str ';'       { mainDialog::setResCmd($3); }
         | HELP_T COMMAND_T str ';'          { mainDialog::setHelpCmd($3); }
-        | IDLE_T TIME_T int ';'             { idleTime  = $3; }
-        | IDLE_T DIALOG_T TIME_T int ';'    { idleDialogTime  = $4; }
-        | MIN_T RUN_T TIME_T int ';'        { minProgTime = $4; }
         | COMMAND_T str cmd icon int_z ';'  { mainDialog::addCommand($2, $3, $4, $5); }
         | BROWSER_T COMMAND_T str ';'       { mainDialog::setBrowserCmd($3); }
-        | NO_T KIOSK_T MODE_T ';'           { isKiosk = false; }
+        | BROWSER_T COMMANDS_T '{' strps '}'{ mainDialog::setBrowserCmds($4); }
         | KIOSK_T MODE_T ';'                { isKiosk = true; }
         | MASTER_T USER_T str ',' str ';'   { mainDialog::setMaster($3, $5); }
+        | cmdcfgs
+        ;
+cmdcfgs : IDLE_T TIME_T int ';'             { idleTime  = $3; }
+        | IDLE_T DIALOG_T TIME_T int ';'    { idleDialogTime  = $4; }
+        | MIN_T RUN_T TIME_T int ';'        { minProgTime = $4; }
+        | NO_T KIOSK_T MODE_T ';'           { isKiosk = false; }
         ;
 str     : NAME_V        { $$ = $1; }
         | STRING_V      { $$ = $1; }
@@ -170,18 +174,24 @@ servers : server            { *($$ = new QStringPairList()) << *$1; delete $1; }
 server  : domain ';'        { $$ = $1; }
         ;
 domain  : str               { $$ = new QStringPair(*$1, QString()); delete $1; }
-        | str ',' str       { $$ = new QStringPair(*$1, *$3); delete $1; delete $3; }
+        | strpair           { $$ = $1; }
+        ;
+strpair : str ',' str       { $$ = new QStringPair(*$1, *$3); delete $1; delete $3; }
+        ;
+strps   : strpair ';'       { *($$ = new QStringPairList()) << *$1; delete $1; }
+        | strps strpair ';' { *($$ = $1)                    << *$2; delete $2; }
         ;
 /* Command parser */
 cmds    : command
         | command ';' cmds
         ;
-command : PING_T            { cCntrl::_ok(); }
+command : PING_T            { ; }
         | OFF_T             { cCntrl::_command(mainDialog::getOffCmd()); }
         | RESTART_T         { cCntrl::_command(mainDialog::getResCmd()); }
         | COMMAND_T str     { cCntrl::command($2); }
         | RUN_T             { cCntrl::getRun(); }
         | SET_T TIME_T OUT_T int    { cCntrl::setCmdTo($4); }
+        | cmdcfgs
         ;
 %%
 
@@ -254,7 +264,7 @@ static int yylex(void)
         TOK(DOMAIN) TOK(RDP) TOK(OFF) TOK(HELP) TOK(COMMAND) TOK(APP)
         TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB) TOK(KIOSK)
         TOK(RESTART) TOK(NO) TOK(MODE) TOK(CLEAN) TOK(INFO) TOK(BROWSER)
-        TOK(MASTER) TOK(USER)
+        TOK(MASTER) TOK(USER) TOK(COMMANDS)
         TOK(PING) TOK(SET) TOK(OUT)
         { NULL, 0 }
     };

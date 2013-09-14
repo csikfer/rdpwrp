@@ -102,9 +102,9 @@
       </spacer>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="logOnLayout">
+      <layout class="QVBoxLayout" name="leftLayout">
        <item>
-        <layout class="QFormLayout" name="formLayout">
+        <layout class="QFormLayout" name="logOnLayout">
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
@@ -213,7 +213,7 @@
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line_2">
+        <widget class="Line" name="beforeBrowserL">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>

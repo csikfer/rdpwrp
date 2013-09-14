@@ -15,6 +15,7 @@ mainDialog::mainDialog(QWidget *parent) :
     pItem = this;
     pToBox = NULL;
     pButtonGroup = NULL;
+    pSelBrowser = NULL;
     procesStop = false;
     DS << __PRETTY_FUNCTION__ << endl;
     idleTimeCnt = 0;
@@ -105,9 +106,24 @@ void mainDialog::set()
         ui->autoOffAfterL->setText(trUtf8("nincs"));
     }
     else ui->autoOffSec->setText(QString::number(idleTime));
-    if (browsercmd.isEmpty()) {
+
+    switch (browsercmd.size()) {
+    case 0:
         ui->browserPB->setDisabled(true);
         ui->browserPB->hide();
+        break;
+    case 1:
+        break;
+    default:
+        pSelBrowser = new QComboBox(this);
+        foreach (QStringPair sp, browsercmd) {
+            QString it = sp.first;
+            QStringList itl = it.split('/');
+            if (itl.size() > 1) pSelBrowser->addItem(QIcon(itl.first()), itl.at(1));
+            else                pSelBrowser->addItem(it);
+        }
+        ui->leftLayout->insertWidget(ui->leftLayout->count()-2, pSelBrowser);
+        break;
     }
     int n = goCommands.size();
     if (n > 0) {
@@ -212,7 +228,6 @@ void    mainDialog::logOn()
             .arg(ui->serverCB->currentText())
             .arg(usr)
             .arg(ui->passwordLE->text());
-    ui->passwordLE->clear();
     command(cmd);
 }
 
@@ -225,7 +240,14 @@ void    mainDialog::enter()
 
 void    mainDialog::browser()
 {
-    command(browsercmd);
+    QString cmd;
+    if (pSelBrowser == NULL) {
+        cmd = browsercmd.at(0).second;
+    }
+    else {
+        cmd = browsercmd.at(pSelBrowser->currentIndex()).second;
+    }
+    command(cmd);
 }
 
 void mainDialog::doExit(const QString &cmd)
@@ -284,6 +306,7 @@ void    mainDialog::selDomain(int ix)
 void mainDialog::command(const QString &cmd, int minTm)
 {
     DS << "Command : " << cmd << endl; // törölni !!! jelszó lehet benne.
+    ui->passwordLE->clear();    // Bármi legyen is ezt törölni kell
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     lastCmd = cmd;
 #endif
@@ -432,3 +455,26 @@ void mainDialog::idleTimeOutBox()
     DS << "Leave : " << __PRETTY_FUNCTION__ << endl;
 }
 
+bool mainDialog::setBrowserCmd(QString * pCmd)
+{
+    QStringPairList& spl = pItem->browsercmd;
+    if (spl.isEmpty()) {
+        QStringPair sp;
+        sp.second = *pCmd;
+        spl << sp;
+        delete pCmd;
+        return true;
+    }
+    return false;   // Hiba!!
+}
+
+bool mainDialog::setBrowserCmds(QStringPairList * pCmds)
+{
+    QStringPairList& spl = pItem->browsercmd;
+    if (spl.isEmpty()) {
+        spl = *pCmds;
+        delete pCmds;
+        return true;
+    }
+    return false;   // Hiba!!
+}

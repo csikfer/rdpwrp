@@ -4,6 +4,7 @@
 #include "main.h"
 #include "idletimeout.h"
 #include <QStringList>
+#include <QComboBox>
 
 namespace Ui {
 class Dialog;
@@ -41,8 +42,8 @@ protected:
     QString             rescmd;
     /// Help megjelenítése parancs
     QString             hlpcmd;
-    /// Browser parancs
-    QString             browsercmd;
+    /// Browser parancs(ok)
+    QStringPairList     browsercmd;
     /// Plussz gombok, a megjelenített név
     QStringList         goNames;
     /// Plussz gombok, a parancs
@@ -52,6 +53,7 @@ protected:
     /// Plussz gombok, min futási idő
     QList<int>          goTimes;
     QButtonGroup      * pButtonGroup;
+    QComboBox         * pSelBrowser;
     QProcess          * pProc;
     QString             procOut;
     QString             lastCommand;
@@ -96,7 +98,8 @@ public:
     static void setOffCmd(QString * pCmd)   { _SET(offcmd, pCmd); }
     static void setResCmd(QString * pCmd)   { _SET(rescmd, pCmd); }
     static void setHelpCmd(QString * pCmd)  { _SET(hlpcmd, pCmd); }
-    static void setBrowserCmd(QString * pCmd){_SET(browsercmd, pCmd); }
+    static bool setBrowserCmd(QString * pCmd);
+    static bool setBrowserCmds(QStringPairList * pCmds);
     static void setMaster(QString * pU, QString * pP) { _SET(masterUser, pU); _SET(masterPsw, pP); }
 
     static const QString& getRdpCmd()       { _GET(rdpcmd); }
