@@ -5,6 +5,7 @@
 #include "control.h"
 #include "parser.h"
 
+bool mainIsFullScreen = true;
 QTextStream *pDS = NULL;
 int idleTimeCnt = 0;
 QString sSugg;
@@ -135,6 +136,7 @@ int main(int argc, char *argv[])
         else if (arg == "-4") ipProto = QAbstractSocket::IPv4Protocol;  // csak IPV4 használata (ha nincs -l)
         else if (arg == "-6") ipProto = QAbstractSocket::IPv6Protocol;  // csak IPV6 használata (ha nincs -l)
         else if (arg == "-p") cmdPort = nextArgUInt(i);                 // UDP parancs port száma
+        else if (arg == "-F") mainIsFullScreen = false;                  // Nem full screen / test
     }
 
     setLocalAddr();
@@ -182,12 +184,13 @@ int main(int argc, char *argv[])
     int r;
     while(!isDown) {
         if (!w.runing()) {
-#if       MAINWINFULLSCREEN
-            w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-            w.showFullScreen();
-#else  // MAINWINFULLSCREEN
-            w.show();
-#endif // MAINWINFULLSCREEN
+            if (mainIsFullScreen) {
+                w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+                w.showFullScreen();
+            }
+            else {
+                w.show();
+            }
         }
         DS << "start event loop : " << endl;
         r = a.exec();

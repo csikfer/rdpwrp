@@ -10,5 +10,8 @@
         <file>images/info.ico</file>
         <file>images/restart.ico</file>
         <file>images/clean.ico</file>
+        <file>images/qupzilla.ico</file>
+        <file>images/chrome.ico</file>
+        <file>images/firefox.ico</file>
     </qresource>
 </RCC>

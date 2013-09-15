@@ -1,6 +1,7 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "QShortcut"
+#include "QStyledItemDelegate"
 
 mainDialog * mainDialog::pItem = NULL;
 
@@ -8,8 +9,7 @@ mainDialog::mainDialog(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Dialog),
     domains(), servers(), rdpCmds(), rdpcmd(), offcmd(), rescmd(), hlpcmd(),
-    browsercmd(),
-    goNames(), goCommands(), goIcons(), goTimes(),
+    browsers(), goList(), goTimes(),
     procOut(), lastCommand()
 {
     pItem = this;
@@ -75,16 +75,16 @@ inline QFrame *mainDialog::hLine()
     return pLine;
 }
 
-inline QPushButton *mainDialog::button(QString& txt, QString ico)
+inline QPushButton *mainDialog::button(const QString& _txt, const QString& ico)
 {
     QPushButton *pPB = new QPushButton(this);
     // Ha felkiáltójellel kezdődik, akkor rejtett, csak a master user/psw -re jelenik meg.
-    bool hidden = txt.startsWith(QChar('!'));
+    bool hidden = _txt.startsWith(QChar('!'));
     if (hidden) {
-        txt = txt.mid(1);
+        pPB->setText(_txt.mid(1));
         pPB->hide();
     }
-    pPB->setText(txt);
+    else pPB->setText(_txt);
     pPB->setIcon(QIcon(ico));
     pPB->setIconSize(QSize(32,32));
 
@@ -107,7 +107,7 @@ void mainDialog::set()
     }
     else ui->autoOffSec->setText(QString::number(idleTime));
 
-    switch (browsercmd.size()) {
+    switch (browsers.size()) {
     case 0:
         ui->browserPB->setDisabled(true);
         ui->browserPB->hide();
@@ -115,23 +115,28 @@ void mainDialog::set()
     case 1:
         break;
     default:
+        QHBoxLayout *pHbl = new QHBoxLayout();
+        ui->leftLayout->insertLayout(ui->leftLayout->count()-2, pHbl);
+        QLabel * pLab = new QLabel(trUtf8("Böngésző "));
+        pHbl->addWidget(pLab);
         pSelBrowser = new QComboBox(this);
-        foreach (QStringPair sp, browsercmd) {
-            QString it = sp.first;
-            QStringList itl = it.split('/');
-            if (itl.size() > 1) pSelBrowser->addItem(QIcon(itl.first()), itl.at(1));
-            else                pSelBrowser->addItem(it);
+        QStyledItemDelegate* itemDelegate = new QStyledItemDelegate();
+        pSelBrowser->setItemDelegate(itemDelegate);
+        pSelBrowser->setIconSize(QSize(32,32));
+        pSelBrowser->setStyleSheet("QComboBox QAbstractItemView::item {height: 40px;}");
+        foreach (cAppButton ab, browsers) {
+            pSelBrowser->addItem(ab.icon(), ab.mText);
         }
-        ui->leftLayout->insertWidget(ui->leftLayout->count()-2, pSelBrowser);
+        pHbl->addWidget(pSelBrowser);
         break;
     }
-    int n = goCommands.size();
+    int n = goList.size();
     if (n > 0) {
         pLayout = ui->buttonLayout;
         pLayout->addWidget(hLine());
         pButtonGroup = new QButtonGroup(this);
         for (int i = 0; i < n; ++i) {
-            QPushButton *pPB = button(goNames[i], goIcons[i]);
+            QPushButton *pPB = button(goList.at(i).mText, goList.at(i).mIcon);
             pLayout->addWidget(pPB);
             pButtonGroup->addButton(pPB, i);
         }
@@ -242,10 +247,10 @@ void    mainDialog::browser()
 {
     QString cmd;
     if (pSelBrowser == NULL) {
-        cmd = browsercmd.at(0).second;
+        cmd = browsers.at(0).mCmd;
     }
     else {
-        cmd = browsercmd.at(pSelBrowser->currentIndex()).second;
+        cmd = browsers.at(pSelBrowser->currentIndex()).mCmd;
     }
     command(cmd);
 }
@@ -286,7 +291,7 @@ void    mainDialog::restart()
 void    mainDialog::go(int id)
 {
     DS << __PRETTY_FUNCTION__ << endl;
-    command(goCommands[id]);
+    command(goList.at(id).mCmd);
 }
 
 void    mainDialog::chgUsrOrPw(QString)
@@ -355,11 +360,8 @@ void    mainDialog::procError(QProcess::ProcessError e)
     DS << __PRETTY_FUNCTION__ << (int)e << endl;
     if (isDown) return;
 #if HIDEMAINIFRUNCHILD
-#if MAINWINFULLSCREEN
-    showFullScreen();
-#else
-    show();
-#endif // MAINWINFULLSCREEN
+    if (mainIsFullScreen) showFullScreen();
+    else                  show();
 #endif // HIDEMAINIFRUNCHILD
 
     if (procesStop) return;
@@ -457,22 +459,22 @@ void mainDialog::idleTimeOutBox()
 
 bool mainDialog::setBrowserCmd(QString * pCmd)
 {
-    QStringPairList& spl = pItem->browsercmd;
-    if (spl.isEmpty()) {
-        QStringPair sp;
-        sp.second = *pCmd;
-        spl << sp;
+    cAppButtonList& apl = pItem->browsers;
+    if (apl.isEmpty()) {
+        cAppButton ap;
+        ap.mCmd = *pCmd;
+        apl << ap;
         delete pCmd;
         return true;
     }
     return false;   // Hiba!!
 }
 
-bool mainDialog::setBrowserCmds(QStringPairList * pCmds)
+bool mainDialog::setBrowserCmds(cAppButtonList * pCmds)
 {
-    QStringPairList& spl = pItem->browsercmd;
-    if (spl.isEmpty()) {
-        spl = *pCmds;
+    cAppButtonList& apl = pItem->browsers;
+    if (apl.isEmpty()) {
+        apl = *pCmds;
         delete pCmds;
         return true;
     }

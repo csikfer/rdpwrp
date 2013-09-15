@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QButtonGroup>
 #include <QtNetwork>
+#include <QIcon>
 
 #define APPNAME rdpwrp
 
@@ -21,7 +22,7 @@
 
 /// Ha értéke nem nulla, akkor a main window teljes képernyős
 /// Tesztelésnél praktikusan legyen nulla
-#define MAINWINFULLSCREEN 0
+extern bool mainIsFullScreen;
 /// Ha értéke nem nulla, akkor program indításakor a fő ablakot láthatatlanná teszi
 #define HIDEMAINIFRUNCHILD 1
 
@@ -93,5 +94,20 @@ inline void critical(QString msg)
     QMessageBox::critical(NULL, sCrit, msg + sSugg);
     ::exit(1);
 }
+
+class cAppButton {
+public:
+    QString mIcon;
+    QString mText;
+    QString mCmd;
+    cAppButton() : mIcon(), mText(), mCmd() {;}
+    cAppButton(QString *pI, QString *pT, QString *pC) : mIcon(*pI), mText(*pT), mCmd(*pC) {
+        delete pI;  delete pT;  delete pC;
+    }
+    QIcon   icon() { return QIcon(mIcon); }
+};
+
+typedef QList<cAppButton> cAppButtonList;
+
 
 #endif // MAIN_H

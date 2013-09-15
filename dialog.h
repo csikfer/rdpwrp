@@ -43,13 +43,9 @@ protected:
     /// Help megjelenítése parancs
     QString             hlpcmd;
     /// Browser parancs(ok)
-    QStringPairList     browsercmd;
-    /// Plussz gombok, a megjelenített név
-    QStringList         goNames;
-    /// Plussz gombok, a parancs
-    QStringList         goCommands;
-    /// Plussz gombok, ikonok
-    QStringList         goIcons;
+    cAppButtonList      browsers;
+    /// Plussz gombok
+    cAppButtonList      goList;
     /// Plussz gombok, min futási idő
     QList<int>          goTimes;
     QButtonGroup      * pButtonGroup;
@@ -91,7 +87,7 @@ public:
 #define _GET(m)     return pItem->m
     static void addDomain(QStringPair * pDom, QStringPairList *pServers);
     static void addCommand(QString *pName, QString *pCmd, QString *pIcon, int _to = -1) {
-        _ADD(goNames, pName);  _ADD(goCommands, pCmd); _ADD(goIcons, pIcon);
+        pItem->goList << cAppButton(pIcon, pName, pCmd);
         pItem->goTimes << ((_to < 0) ? minProgTime : _to);
     }
     static void setRdpCmd(QString * pCmd)   { _SET(rdpcmd, pCmd); }
@@ -99,7 +95,7 @@ public:
     static void setResCmd(QString * pCmd)   { _SET(rescmd, pCmd); }
     static void setHelpCmd(QString * pCmd)  { _SET(hlpcmd, pCmd); }
     static bool setBrowserCmd(QString * pCmd);
-    static bool setBrowserCmds(QStringPairList * pCmds);
+    static bool setBrowserCmds(cAppButtonList * pCmds);
     static void setMaster(QString * pU, QString * pP) { _SET(masterUser, pU); _SET(masterPsw, pP); }
 
     static const QString& getRdpCmd()       { _GET(rdpcmd); }
@@ -111,7 +107,7 @@ public:
 private:
     void doExit(const QString& cmd = QString());
     inline QFrame *hLine();
-    inline QPushButton *button(QString &txt, QString ico);
+    inline QPushButton *button(const QString &_txt, const QString &ico);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 protected:
     QString     lastCmd;

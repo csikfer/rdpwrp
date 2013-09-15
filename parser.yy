@@ -94,13 +94,15 @@ static int yylex(void);
     QString *           s;
     QStringList *      sl;
     QStringPair *      sp;
-    QStringPairList*  spl;
+    QStringPairList * spl;
+    cAppButton *       ap;
+    cAppButtonList *  apl;
 }
 
 %token      DOMAIN_T RDP_T OFF_T HELP_T COMMAND_T APP_T
 %token      IDLE_T DIALOG_T TIME_T MIN_T RUN_T WEB_T KIOSK_T
 %token      RESTART_T NO_T MODE_T CLEAN_T INFO_T BROWSER_T
-%token      MASTER_T USER_T COMMANDS_T
+%token      MASTER_T USER_T COMMANDS_T CHROME_T FIREFOX_T QUPZILLA_T
 
 %token      PING_T SET_T OUT_T
 
@@ -110,7 +112,9 @@ static int yylex(void);
 %type  <i>  int int_z
 %type  <s>  str cmd icon
 %type <sp>  server domain strpair
-%type <spl> servers strps
+%type <spl> servers
+%type  <ap> ap
+%type <apl> apl
 /*
 %type <sl>  strs
 */
@@ -130,9 +134,9 @@ config  : DOMAIN_T domain '{' servers '}'   { mainDialog::addDomain($2, $4); }
         | HELP_T COMMAND_T str ';'          { mainDialog::setHelpCmd($3); }
         | COMMAND_T str cmd icon int_z ';'  { mainDialog::addCommand($2, $3, $4, $5); }
         | BROWSER_T COMMAND_T str ';'       { mainDialog::setBrowserCmd($3); }
-        | BROWSER_T COMMANDS_T '{' strps '}'{ mainDialog::setBrowserCmds($4); }
+        | BROWSER_T COMMANDS_T '{' apl '}'  { mainDialog::setBrowserCmds($4); }
         | KIOSK_T MODE_T ';'                { isKiosk = true; }
-        | MASTER_T USER_T str ',' str ';'   { mainDialog::setMaster($3, $5); }
+        | MASTER_T USER_T str str ';'       { mainDialog::setMaster($3, $4); }
         | cmdcfgs
         ;
 cmdcfgs : IDLE_T TIME_T int ';'             { idleTime  = $3; }
@@ -167,6 +171,9 @@ icon    : str           { $$ = $1; }
         | CLEAN_T       { $$ = new QString(":/images/clean.ico"); }
         | APP_T         { $$ = new QString(":/images/app.ico"); }
         |               { $$ = new QString(":/images/app.ico"); }
+        | CHROME_T      { $$ = new QString(":/images/chrome.ico"); }
+        | FIREFOX_T     { $$ = new QString(":/images/firefox.ico"); }
+        | QUPZILLA_T    { $$ = new QString(":/images/qupzilla.ico"); }
         ;
 servers : server            { *($$ = new QStringPairList()) << *$1; delete $1; }
         | servers server    { *($$ = $1)                    << *$2; delete $2; }
@@ -176,10 +183,12 @@ server  : domain ';'        { $$ = $1; }
 domain  : str               { $$ = new QStringPair(*$1, QString()); delete $1; }
         | strpair           { $$ = $1; }
         ;
-strpair : str ',' str       { $$ = new QStringPair(*$1, *$3); delete $1; delete $3; }
+strpair : str str           { $$ = new QStringPair(*$1, *$2); delete $1; delete $2; }
         ;
-strps   : strpair ';'       { *($$ = new QStringPairList()) << *$1; delete $1; }
-        | strps strpair ';' { *($$ = $1)                    << *$2; delete $2; }
+apl     : ap ';'            { *($$ = new cAppButtonList()) << *$1; delete $1; }
+        | apl ap ';'        { *($$ = $1)                   << *$2; delete $2; }
+        ;
+ap      : str cmd icon      { $$ = new cAppButton($3, $1, $2); }
         ;
 /* Command parser */
 cmds    : command
@@ -264,7 +273,7 @@ static int yylex(void)
         TOK(DOMAIN) TOK(RDP) TOK(OFF) TOK(HELP) TOK(COMMAND) TOK(APP)
         TOK(IDLE) TOK(DIALOG) TOK(TIME) TOK(MIN) TOK(RUN) TOK(WEB) TOK(KIOSK)
         TOK(RESTART) TOK(NO) TOK(MODE) TOK(CLEAN) TOK(INFO) TOK(BROWSER)
-        TOK(MASTER) TOK(USER) TOK(COMMANDS)
+        TOK(MASTER) TOK(USER) TOK(COMMANDS) TOK(CHROME) TOK(FIREFOX) TOK(QUPZILLA)
         TOK(PING) TOK(SET) TOK(OUT)
         { NULL, 0 }
     };
