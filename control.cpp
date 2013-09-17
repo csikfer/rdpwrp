@@ -12,7 +12,7 @@ cCntrl * cCntrl::pItem = NULL;
 cCntrl::cCntrl()
 {
     pSock = new QUdpSocket(this);
-    if (!pSock->bind(localAddr, cmdPort)) {
+    if (!pSock->bind(cmdPort, QAbstractSocket::ShareAddress)) {
         QString msg = QObject::trUtf8("Hiba a UDPSocket bint(%1, %2) hívásban : %3")
                 .arg(localAddr.toString())
                 .arg(cmdPort)
