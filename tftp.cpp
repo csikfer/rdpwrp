@@ -58,8 +58,16 @@ bool QTFtpClient::bindSocket()
     socket=new QUdpSocket();
 
     // AND SEE IF WE CAN BIND IT TO A LOCAL IP ADDRESS AND PORT
-    DS << "bind " << localAddr.toString() << ", " << LOCALUDPPORT << endl;
-    return socket->bind(localAddr, LOCALUDPPORT);
+
+    quint16 lup = LOCALUDPPORT;
+    int     rep = 32;
+    while (--rep > 0) {
+        DS << "bind " << localAddr.toString() << ", " << lup << endl;
+        bool r =  socket->bind(localAddr, lup);
+        if (r) return true;
+        ++lup;
+    }
+    return false;
 }
 
 /*
@@ -166,7 +174,18 @@ bool QTFtpClient::putByteArray(QString filename, QByteArray transmittingFile)
 
 }
 */
+
 bool QTFtpClient::getByteArray(QString filename, QByteArray *requestedFile)
+{
+    int rep = 4;
+    do {
+        if (_getByteArray(filename, requestedFile)) return true;
+    } while (--rep > 0);
+    return false;
+}
+
+
+bool QTFtpClient::_getByteArray(QString filename, QByteArray *requestedFile)
 {
     DS << __PRETTY_FUNCTION__ << endl;
     // BIND OUR LOCAL SOCKET TO AN IP ADDRESS AND PORT

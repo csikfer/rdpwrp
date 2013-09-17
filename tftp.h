@@ -15,14 +15,15 @@ public:
     QTFtpClient(QString remoteAddressString, int port = TFTPUDPPORT);
     ~QTFtpClient();
 
-    // bool putByteArray(QString filename, QByteArray transmittingFile);
     bool getByteArray(QString filename, QByteArray *requestedFile);
+    // bool putByteArray(QString filename, QByteArray transmittingFile);
 
     QString lastError() { return lastErrorString; }
     bool operator !()   { return !lastErrorString.isEmpty(); }
 
 private:
     bool bindSocket();
+    bool _getByteArray(QString filename, QByteArray *requestedFile);
     QByteArray getFilePacket(QString filename);
     // QByteArray putFilePacket(QString filename);
 
