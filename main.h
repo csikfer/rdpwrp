@@ -56,7 +56,7 @@ extern QString hostname;
 extern QString localAddrStr;
 extern QHostAddress    localAddr;
 
-extern int     desktopHeiht, desktopWidth;
+extern int     desktopHeight, desktopWidth;
 
 extern bool    isDown;      ///< Állapot jelző
 extern bool    isKiosk;     ///< Mód

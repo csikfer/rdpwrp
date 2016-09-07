@@ -37,6 +37,9 @@ mainDialog::mainDialog(QWidget *parent) :
     connect(ui->cleanPB,    SIGNAL(clicked()),            this, SLOT(restart()));
     connect(ui->helpPB,     SIGNAL(clicked()),            this, SLOT(help()));
 
+    connect(ui->pushButtonEn, SIGNAL(clicked()),        this, SLOT(setEn()));
+    connect(ui->pushButtonHu, SIGNAL(clicked()),        this, SLOT(setHu()));
+
     QShortcut *pSc;
     pSc = new QShortcut(QKeySequence(QKeySequence::HelpContents), this);                // F1
     connect(pSc, SIGNAL(activated()), this, SLOT(help()));
@@ -93,6 +96,13 @@ inline QPushButton *mainDialog::button(const QString& _txt, const QString& ico)
 
 void mainDialog::set()
 {
+    trHuPath = trEnPath = QApplication::applicationDirPath() + "/" + STR(APPNAME);
+    trHuPath += "_hu.qm";
+    trEnPath += "_en.qm";
+
+    if(m_translatorQt.load("qt_hu.qm")) qApp->installTranslator(&m_translatorQt);
+    if(m_translator.  load(trHuPath))   qApp->installTranslator(&m_translatorQt);
+
     ui->domainCB->clear();
     ui->domainCB->addItems(domains);
     ui->serverCB->clear();
@@ -107,28 +117,16 @@ void mainDialog::set()
     }
     else ui->autoOffSec->setText(QString::number(idleTime));
 
-    switch (browsers.size()) {
-    case 0:
+    if (browsers.size()) {
+        foreach (cAppButton ab, browsers) {
+            ui->comboBoxBrowser->addItem(ab.icon(), ab.mText);
+        }
+        ui->comboBoxBrowser->setCurrentIndex(0);
+    }
+    else {
         ui->browserPB->setDisabled(true);
         ui->browserPB->hide();
-        break;
-    case 1:
-        break;
-    default:
-        QHBoxLayout *pHbl = new QHBoxLayout();
-        ui->leftLayout->insertLayout(ui->leftLayout->count()-2, pHbl);
-        QLabel * pLab = new QLabel(trUtf8("Böngésző "));
-        pHbl->addWidget(pLab);
-        pSelBrowser = new QComboBox(this);
-        QStyledItemDelegate* itemDelegate = new QStyledItemDelegate();
-        pSelBrowser->setItemDelegate(itemDelegate);
-        pSelBrowser->setIconSize(QSize(32,32));
-        pSelBrowser->setStyleSheet("QComboBox QAbstractItemView::item {height: 40px;}");
-        foreach (cAppButton ab, browsers) {
-            pSelBrowser->addItem(ab.icon(), ab.mText);
-        }
-        pHbl->addWidget(pSelBrowser);
-        break;
+        ui->comboBoxBrowser->setDisabled(true);
     }
     int n = goList.size();
     if (n > 0) {
@@ -480,3 +478,39 @@ bool mainDialog::setBrowserCmds(cAppButtonList * pCmds)
     }
     return false;   // Hiba!!
 }
+
+void    mainDialog::setHu()
+{
+    qApp->removeTranslator(&m_translatorQt);
+    qApp->removeTranslator(&m_translator);
+
+    if(m_translatorQt.load("qt_hu.qm")) {
+        qApp->installTranslator(&m_translatorQt);
+    }
+    if(m_translator.  load(trHuPath)) {
+        qApp->installTranslator(&m_translator);
+    }
+    ui->retranslateUi(this);
+    ui->pushButtonEn->setEnabled(true);
+    ui->pushButtonHu->setDisabled(true);
+    QProcess::execute("setxkbmap hu");
+}
+
+void    mainDialog::setEn()
+{
+    qApp->removeTranslator(&m_translatorQt);
+    qApp->removeTranslator(&m_translator);
+
+    if(m_translatorQt.load("qt_en.qm")) {
+        qApp->installTranslator(&m_translatorQt);
+    }
+    if(m_translator.  load(trEnPath)) {
+        qApp->installTranslator(&m_translator);
+    }
+
+    ui->retranslateUi(this);
+    ui->pushButtonHu->setEnabled(true);
+    ui->pushButtonEn->setDisabled(true);
+    QProcess::execute("setxkbmap us");
+}
+

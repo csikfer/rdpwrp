@@ -13,5 +13,7 @@
         <file>images/qupzilla.ico</file>
         <file>images/chrome.ico</file>
         <file>images/firefox.ico</file>
+        <file>images/flag-gb.png</file>
+        <file>images/flag-hu.png</file>
     </qresource>
 </RCC>

@@ -16,7 +16,7 @@ QString localAddrStr;
 QHostAddress localAddr;
 bool    isDown  = false;
 bool    isKiosk = false;
-int     desktopHeiht, desktopWidth;
+int     desktopHeight, desktopWidth;
 
 int idleTime        = IDLETIME;
 int idleDialogTime  = IDLEDIALOGTIME;
@@ -88,6 +88,7 @@ static void setLocalAddr()
     }
 }
 
+/****************************************** main() ******************************************/
 int main(int argc, char *argv[])
 {
     //QMyApplication a(argc, argv);
@@ -97,8 +98,8 @@ int main(int argc, char *argv[])
     sSugg = QObject::trUtf8("<br>Kérem forduljon a rendszergazdához!");
     sCrit = QObject::trUtf8("Végzetes hiba!");
     sWarn = QObject::trUtf8("Figyelmeztetés");
-    desktopHeiht = QApplication::desktop()->height();
-    desktopWidth = QApplication::desktop()->width();
+    desktopHeight = QApplication::desktop()->height();
+    desktopWidth  = QApplication::desktop()->width();
     // Saját hoszt név
     const char * pe = getenv("HOSTNAME");
     if (pe == NULL || (hostname = pe).isEmpty()) {
@@ -136,7 +137,7 @@ int main(int argc, char *argv[])
         else if (arg == "-4") ipProto = QAbstractSocket::IPv4Protocol;  // csak IPV4 használata (ha nincs -l)
         else if (arg == "-6") ipProto = QAbstractSocket::IPv6Protocol;  // csak IPV6 használata (ha nincs -l)
         else if (arg == "-p") cmdPort = nextArgUInt(i);                 // UDP parancs port száma
-        else if (arg == "-F") mainIsFullScreen = false;                  // Nem full screen / test
+        else if (arg == "-F") mainIsFullScreen = false;                 // Nem full screen / test
     }
 
     setLocalAddr();
@@ -228,9 +229,9 @@ msgBox::msgBox(QWidget *p) : QDialog(p)
     layout->addWidget(buttons);
     connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
     int x = desktopWidth/6;
-    int y = desktopHeiht/6;
+    int y = desktopHeight/6;
     int w = (desktopWidth*2)/3;
-    int h = (desktopHeiht*2)/3;
+    int h = (desktopHeight*2)/3;
     setGeometry(x, y, w, h);
     timer = startTimer(300 * 1000);  // 5 perc mulva automatikusan becsukódik
 }

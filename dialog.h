@@ -61,6 +61,10 @@ protected:
     QString             masterUser;
     QString             masterPsw;
     bool                procesStop;
+    QString             trHuPath;
+    QString             trEnPath;
+    QTranslator m_translator; // contains the translations for this application
+    QTranslator m_translatorQt; // contains the translations for qt
 private slots:
     void    logOn();                ///< KogOn gombot megnyomta
     void    browser();              ///< Browser idítása gomb
@@ -79,6 +83,8 @@ private slots:
     void    procFinished(int r);
     /// Kikapcsolásra figyelmeztetés
     void    idleTimeOutBox();
+    void    setHu();
+    void    setEn();
 signals:
     void    doTOBox();
 public:
