@@ -17,6 +17,7 @@ QHostAddress localAddr;
 bool    isDown  = false;
 bool    isKiosk = false;
 int     desktopHeight, desktopWidth;
+eActLang  actLang = AL_HU;
 
 int idleTime        = IDLETIME;
 int idleDialogTime  = IDLEDIALOGTIME;
@@ -182,7 +183,7 @@ int main(int argc, char *argv[])
 
     cCntrl  rControl;   // Távvezérlés indítása
 
-    int r;
+    int r = -1;
     while(!isDown) {
         if (!w.runing()) {
             if (mainIsFullScreen) {
@@ -198,6 +199,7 @@ int main(int argc, char *argv[])
         DS << "exit event loop : " << r << endl;
     };
     if (w.runing()) w.stopProc();
+    if (actLang == AL_EN) QProcess::execute("setxkbmap hu");
     return r;
 }
 

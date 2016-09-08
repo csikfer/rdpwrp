@@ -165,7 +165,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Magyar nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv a Magyar.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#ff8080;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Magyar nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv a Magyar.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#fe0000;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string notr="true">Magyar</string>
@@ -185,7 +185,7 @@
          <item>
           <widget class="QPushButton" name="pushButtonEn">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Angol nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv az Angol.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#ff8080;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Angol nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv az Angol.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#ff0000;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string notr="true">English</string>
@@ -279,7 +279,7 @@
          <item row="3" column="1">
           <widget class="QLineEdit" name="passwordLE">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A megadott felhasználóhoz tartozó jelszó.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8080;&quot;&gt;Úgyeljünk rá, hogy a kiválasztott nyelv alapján változik a billentyű kiosztás!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A megadott felhasználóhoz tartozó jelszó.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Úgyeljünk rá, hogy a kiválasztott nyelv alapján változik a billentyű kiosztás!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="inputMask">
             <string notr="true"/>

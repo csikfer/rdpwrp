@@ -268,6 +268,7 @@ void mainDialog::doExit(const QString &cmd)
         }
     }
     if (cmd.isEmpty() == false) QProcess::execute(cmd);
+    if (actLang == AL_EN) QProcess::execute("setxkbmap hu");
     QApplication::exit(0);
 }
 
@@ -317,6 +318,7 @@ void mainDialog::command(const QString &cmd, int minTm)
     if (pProc != NULL) {
         if (pProc->state() != QProcess::NotRunning && isDown == false) {
             QMessageBox::critical(this, "Kritikus hiba!", trUtf8("Program hiba : %1").arg(__PRETTY_FUNCTION__));
+            if (actLang == AL_EN) QProcess::execute("setxkbmap hu");
             ::exit(1);
         }
     }
@@ -429,6 +431,7 @@ void mainDialog::idleTimeOutBox()
     if (isDown) return;
     if (pToBox != NULL) {
         QMessageBox::critical(this, "Kritikus hiba!", trUtf8("Program hiba : %1").arg(__PRETTY_FUNCTION__));
+        if (actLang == AL_EN) QProcess::execute("setxkbmap hu");
         ::exit(1);
     }
     activateWindow();
@@ -494,6 +497,7 @@ void    mainDialog::setHu()
     ui->pushButtonEn->setEnabled(true);
     ui->pushButtonHu->setDisabled(true);
     QProcess::execute("setxkbmap hu");
+    actLang = AL_HU;
 }
 
 void    mainDialog::setEn()
@@ -512,5 +516,6 @@ void    mainDialog::setEn()
     ui->pushButtonHu->setEnabled(true);
     ui->pushButtonEn->setDisabled(true);
     QProcess::execute("setxkbmap us");
+    actLang = AL_EN;
 }
 

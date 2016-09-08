@@ -60,6 +60,7 @@ extern int     desktopHeight, desktopWidth;
 
 extern bool    isDown;      ///< Állapot jelző
 extern bool    isKiosk;     ///< Mód
+extern enum eActLang { AL_HU, AL_EN } actLang;
 
 /* // Az idletime() ezt kiváltja
 class QMyApplication : public QApplication
