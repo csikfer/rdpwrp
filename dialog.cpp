@@ -1,13 +1,13 @@
 #include "dialog.h"
-#include "ui_dialog.h"
+#include "ui_mainwindow.h"
 #include "QShortcut"
 #include "QStyledItemDelegate"
 
 mainDialog * mainDialog::pItem = NULL;
 
 mainDialog::mainDialog(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Dialog),
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
     domains(), servers(), rdpCmds(), rdpcmd(), offcmd(), rescmd(), hlpcmd(),
     browsers(), goList(), goTimes(),
     procOut(), lastCommand()
@@ -23,8 +23,19 @@ mainDialog::mainDialog(QWidget *parent) :
     timerId  = -1;
     pProc = NULL;
     ui->setupUi(this);
+    pStatusBarAutoOff = new QLabel;
+    pStatusBarAutoOffSec = new QLabel;
+    pStatusBarAutoOffAfter = new QLabel;
+    pStatusBarRightLabel = new QLabel;
+    statusBar()->addPermanentWidget(pStatusBarAutoOff);
+    statusBar()->addPermanentWidget(pStatusBarAutoOffSec);
+    statusBar()->addPermanentWidget(pStatusBarAutoOffAfter);
+    statusBar()->addPermanentWidget(pStatusBarRightLabel, 1);
+    pStatusBarRightLabel->setAlignment(Qt::AlignRight);
+    pStatusBarAutoOff->setText(trUtf8("Automatikus kikapcsolás : "));
+    pStatusBarRightLabel->setText(hostname);
+
     ui->logOnPB->setDisabled(true);
-    ui->clientNameL->setText(hostname);
     connect(ui->logOnPB,    SIGNAL(clicked()),            this, SLOT(logOn()));
     connect(ui->userLE,     SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
     connect(ui->passwordLE, SIGNAL(textChanged(QString)), this, SLOT(chgUsrOrPw(QString)));
@@ -112,10 +123,10 @@ void mainDialog::set()
         ui->offPB->hide();
     }
     if (isKiosk || idleTime < 0) {
-        ui->autoOffSec->hide();
-        ui->autoOffAfterL->setText(trUtf8("nincs"));
+        pStatusBarAutoOffSec->hide();
+        pStatusBarAutoOffAfter->setText(trUtf8("nincs"));
     }
-    else ui->autoOffSec->setText(QString::number(idleTime));
+    else pStatusBarAutoOffSec->setText(QString::number(idleTime));
 
     if (browsers.size()) {
         foreach (cAppButton ab, browsers) {

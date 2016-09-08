@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
         QFile   fhn("/etc/hostname");
         if (fhn.open(QIODevice::ReadOnly)) {
             hostname = fhn.readAll();
+            hostname = hostname.simplified();
         }
         else {
             hostname = QObject::trUtf8("Ismeretlen");

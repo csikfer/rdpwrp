@@ -5,15 +5,16 @@
 #include "idletimeout.h"
 #include <QStringList>
 #include <QComboBox>
+#include <QMainWindow>
 
 namespace Ui {
-class Dialog;
+class MainWindow;
 }
 
 typedef QPair<QString, QString> QStringPair;
 typedef QList<QStringPair>      QStringPairList;
 
-class mainDialog : public QWidget
+class mainDialog : public QMainWindow
 {
     friend void message(const QString& _t, const QString& _m);
     Q_OBJECT
@@ -27,7 +28,12 @@ protected:
     void timerEvent(QTimerEvent *pTe);
     /// Egy parancs végrahajtása
     void command(const QString& cmd, int minTm = minProgTime);
-    Ui::Dialog *ui;
+    Ui::MainWindow *ui;
+    // Status bar:
+    QLabel      *pStatusBarAutoOff;
+    QLabel      *pStatusBarAutoOffSec;
+    QLabel      *pStatusBarAutoOffAfter;
+    QLabel      *pStatusBarRightLabel;
     /// Domain nevek listája
     QStringList         domains;
     /// Sterver listák a domain-ekhez
@@ -55,7 +61,7 @@ protected:
     QString             lastCommand;
     int                 procTime;
     int                 timerId;
-    static mainDialog *     pItem;
+    static mainDialog * pItem;
     int                 actMinProgTime;
     cIdleTimeOut *      pToBox;
     QString             masterUser;

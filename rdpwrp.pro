@@ -40,8 +40,9 @@ HEADERS  += dialog.h \
     control.h \
     parser.h
 
-FORMS    += dialog.ui \
-    idletimeout.ui
+FORMS    += \
+    idletimeout.ui \
+    mainwindow.ui
 
 RESOURCES += \
     rdpwrp.qrc
