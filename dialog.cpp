@@ -337,6 +337,7 @@ void mainDialog::command(const QString &cmd, int minTm)
     procTime = -1;
     pProc->start(cmd, QIODevice::ReadOnly);
 #if HIDEMAINIFRUNCHILD
+    DS << "Hide main dialog..." << endl;
     hide();
 #endif
 }
@@ -360,6 +361,7 @@ void    mainDialog::procError(QProcess::ProcessError e)
     DS << __PRETTY_FUNCTION__ << (int)e << endl;
     if (isDown) return;
 #if HIDEMAINIFRUNCHILD
+    DS << "Show main dialog..." << endl;
     if (mainIsFullScreen) showFullScreen();
     else                  show();
 #endif // HIDEMAINIFRUNCHILD
@@ -394,11 +396,9 @@ void    mainDialog::procFinished(int r)
     DS << __PRETTY_FUNCTION__ << r << endl;
     if (isDown) return;
 #if HIDEMAINIFRUNCHILD
-#if MAINWINFULLSCREEN
-    showFullScreen();
-#else
-    show();
-#endif // MAINWINFULLSCREEN
+    DS << "Show main dialog..." << endl;
+    if (mainIsFullScreen) showFullScreen();
+    else                  show();
 #endif // HIDEMAINIFRUNCHILD
     if (procesStop) return;
     if (procTime < actMinProgTime) {  // Túl hamar kilépett

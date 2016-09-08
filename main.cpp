@@ -186,6 +186,7 @@ int main(int argc, char *argv[])
     int r = -1;
     while(!isDown) {
         if (!w.runing()) {
+            DS << "Show main dialog..." << endl;
             if (mainIsFullScreen) {
                 w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
                 w.showFullScreen();
@@ -193,6 +194,9 @@ int main(int argc, char *argv[])
             else {
                 w.show();
             }
+        }
+        else {
+            DS << "Running ?! Exec main dialog ..." << endl;
         }
         DS << "start event loop : " << endl;
         r = a.exec();
