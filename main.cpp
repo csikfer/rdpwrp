@@ -162,7 +162,6 @@ int main(int argc, char *argv[])
     }
     pIn->seek(0);
 
-    mainDialog w;
 
     if (0 != parseConfig(pIn)) {
         const QString br = "<br>";
@@ -180,30 +179,22 @@ int main(int argc, char *argv[])
     delete pIn;
     if (pInArray != NULL) delete pInArray;
 
-    w.set();
-
     cCntrl  rControl;   // Távvezérlés indítása
-
     int r = -1;
     while(!isDown) {
-        if (!w.runing()) {
-            DS << "Show main dialog..." << endl;
-            if (mainIsFullScreen) {
-                w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-                w.showFullScreen();
-            }
-            else {
-                w.show();
-            }
+        mainDialog w;
+        w.set();
+        if (mainIsFullScreen) {
+            w.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+            w.showFullScreen();
         }
         else {
-            DS << "Running ?! Exec main dialog ..." << endl;
+            w.show();
         }
-        DS << "start event loop : " << endl;
         r = a.exec();
-        DS << "exit event loop : " << r << endl;
+        if (w.runing()) w.stopProc();
+
     };
-    if (w.runing()) w.stopProc();
     if (actLang == AL_EN) QProcess::execute("setxkbmap hu");
     return r;
 }

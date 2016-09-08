@@ -5,11 +5,23 @@
 
 mainDialog * mainDialog::pItem = NULL;
 
+QStringList         mainDialog::domains;
+QList<QStringList>  mainDialog::servers;
+QList<QStringList>  mainDialog::rdpCmds;
+QString             mainDialog::rdpcmd;
+QString             mainDialog::offcmd;
+QString             mainDialog::rescmd;
+QString             mainDialog::hlpcmd;
+cAppButtonList      mainDialog::browsers;
+cAppButtonList      mainDialog::goList;
+QList<int>          mainDialog::goTimes;
+
+QString             mainDialog::masterUser;
+QString             mainDialog::masterPsw;
+
 mainDialog::mainDialog(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    domains(), servers(), rdpCmds(), rdpcmd(), offcmd(), rescmd(), hlpcmd(),
-    browsers(), goList(), goTimes(),
     procOut(), lastCommand()
 {
     pItem = this;
@@ -63,20 +75,20 @@ mainDialog::~mainDialog()
     pItem = NULL;
     killTimer(timerId);
     // if (pProc != NULL) delete pProc;
-    delete ui;
+    // delete ui;
 }
 
 void mainDialog::addDomain(QStringPair * pDom, QStringPairList *pServers)
 {
-    pItem->domains << pDom->first;
+    domains << pDom->first;
     QStringList srvs;
     QStringList cmds;
     foreach (QStringPair ss, *pServers) {
         srvs << ss.first;
         cmds << (ss.second.isEmpty() ? pDom->second : ss.second);
     }
-    pItem->servers << srvs;
-    pItem->rdpCmds << cmds;
+    servers << srvs;
+    rdpCmds << cmds;
     delete pDom;
     delete pServers;
 }
@@ -236,11 +248,12 @@ void    mainDialog::logOn()
     // Alternatív parancs
     QString altCmd = rdpCmds.at(ui->serverCB->currentIndex()).at(ui->serverCB->currentIndex());
     if (altCmd.isEmpty() == false) cmd = altCmd;
-    cmd = cmd
-            .arg(dom)
-            .arg(ui->serverCB->currentText())
-            .arg(usr)
-            .arg(ui->passwordLE->text());
+    cmd = cmd.arg(
+                dom,
+                ui->serverCB->currentText(),
+                usr,
+                ui->passwordLE->text(),
+                actLang == AL_HU ? "hu" : "us");
     command(cmd);
 }
 
@@ -365,51 +378,21 @@ void    mainDialog::procError(QProcess::ProcessError e)
 {
     DS << __PRETTY_FUNCTION__ << (int)e << endl;
     if (isDown) return;
-#if HIDEMAINIFRUNCHILD
-    DS << "Show main dialog..." << endl;
-    if (mainIsFullScreen) showFullScreen();
-    else                  show();
-#endif // HIDEMAINIFRUNCHILD
 
-    if (procesStop) return;
-
-    QString msg;
-    msg  = trUtf8("<h1>Parancs, vagy parancs idítási hiba</h1>\n");
-    switch (e) {
-    case QProcess::FailedToStart:   msg += trUtf8("A program idítása nem lehetséges.\n"); break;
-    case QProcess::Crashed:         msg += trUtf8("A program összeomlott.\n"); break;
-    case QProcess::Timedout:        msg += trUtf8("Idő tullépés.\n"); break;
-    case QProcess::WriteError:      msg += trUtf8("Program írási hiba.\n"); break;
-    case QProcess::ReadError:       msg += trUtf8("Program olvasási hiba.\n"); break;
-    case QProcess::UnknownError:
-    default:                        msg += trUtf8("Ismeretlen hiba.\n"); break;
-    }
-    msg += trUtf8("<h2>Parancs sor:</h2>\n");
-    msg += lastCommand;
-    if (procOut.isEmpty()) {
-        msg += trUtf8("<h2>A programnak nem volt kimenete.</h2>\n");
-    }
-    else {
-        msg += trUtf8("<h2>A program kimenete:</h2>\n");
-        msg += procOut + "\n";
-    }
-    message(sWarn, msg);
-}
-
-void    mainDialog::procFinished(int r)
-{
-    DS << __PRETTY_FUNCTION__ << r << endl;
-    if (isDown) return;
-#if HIDEMAINIFRUNCHILD
-    DS << "Show main dialog..." << endl;
-    if (mainIsFullScreen) showFullScreen();
-    else                  show();
-#endif // HIDEMAINIFRUNCHILD
-    if (procesStop) return;
-    if (procTime < actMinProgTime) {  // Túl hamar kilépett
+    if (!procesStop) {
         QString msg;
-        msg  = trUtf8("<h1>A parancs futási ideje gyanús. Hiba történt?</h1>\n");
-        msg += trUtf8("<h2>Kilépési kód : %1").arg(r);
+        msg  = trUtf8("<h1>Parancs, vagy parancs idítási hiba</h1>\n");
+        switch (e) {
+        case QProcess::FailedToStart:   msg += trUtf8("A program idítása nem lehetséges.\n"); break;
+        case QProcess::Crashed:         msg += trUtf8("A program összeomlott.\n"); break;
+        case QProcess::Timedout:        msg += trUtf8("Idő tullépés.\n"); break;
+        case QProcess::WriteError:      msg += trUtf8("Program írási hiba.\n"); break;
+        case QProcess::ReadError:       msg += trUtf8("Program olvasási hiba.\n"); break;
+        case QProcess::UnknownError:
+        default:                        msg += trUtf8("Ismeretlen hiba.\n"); break;
+        }
+        msg += trUtf8("<h2>Parancs sor:</h2>\n");
+        msg += lastCommand;
         if (procOut.isEmpty()) {
             msg += trUtf8("<h2>A programnak nem volt kimenete.</h2>\n");
         }
@@ -419,6 +402,35 @@ void    mainDialog::procFinished(int r)
         }
         message(sWarn, msg);
     }
+#if HIDEMAINIFRUNCHILD
+    DS << "Renew main dialog..." << endl;
+    qApp->exit(0);
+#endif // HIDEMAINIFRUNCHILD
+}
+
+void    mainDialog::procFinished(int r)
+{
+    DS << __PRETTY_FUNCTION__ << r << endl;
+    if (isDown) return;
+    if (!procesStop) {
+        if (procTime < actMinProgTime) {  // Túl hamar kilépett
+            QString msg;
+            msg  = trUtf8("<h1>A parancs futási ideje gyanús. Hiba történt?</h1>\n");
+            msg += trUtf8("<h2>Kilépési kód : %1").arg(r);
+            if (procOut.isEmpty()) {
+                msg += trUtf8("<h2>A programnak nem volt kimenete.</h2>\n");
+            }
+            else {
+                msg += trUtf8("<h2>A program kimenete:</h2>\n");
+                msg += procOut + "\n";
+            }
+            message(sWarn, msg);
+        }
+    }
+#if HIDEMAINIFRUNCHILD
+    DS << "Renew main dialog..." << endl;
+    qApp->exit(0);
+#endif // HIDEMAINIFRUNCHILD
 }
 
 void    mainDialog::stopProc()
@@ -465,11 +477,10 @@ void mainDialog::idleTimeOutBox()
 
 bool mainDialog::setBrowserCmd(QString * pCmd)
 {
-    cAppButtonList& apl = pItem->browsers;
-    if (apl.isEmpty()) {
+    if (browsers.isEmpty()) {
         cAppButton ap;
         ap.mCmd = *pCmd;
-        apl << ap;
+        browsers << ap;
         delete pCmd;
         return true;
     }
@@ -478,9 +489,8 @@ bool mainDialog::setBrowserCmd(QString * pCmd)
 
 bool mainDialog::setBrowserCmds(cAppButtonList * pCmds)
 {
-    cAppButtonList& apl = pItem->browsers;
-    if (apl.isEmpty()) {
-        apl = *pCmds;
+    if (browsers.isEmpty()) {
+        browsers = *pCmds;
         delete pCmds;
         return true;
     }
