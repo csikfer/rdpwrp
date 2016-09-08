@@ -15,7 +15,6 @@ mainDialog::mainDialog(QWidget *parent) :
     pItem = this;
     pToBox = NULL;
     pButtonGroup = NULL;
-    pSelBrowser = NULL;
     procesStop = false;
     DS << __PRETTY_FUNCTION__ << endl;
     idleTimeCnt = 0;
@@ -255,12 +254,7 @@ void    mainDialog::enter()
 void    mainDialog::browser()
 {
     QString cmd;
-    if (pSelBrowser == NULL) {
-        cmd = browsers.at(0).mCmd;
-    }
-    else {
-        cmd = browsers.at(pSelBrowser->currentIndex()).mCmd;
-    }
+    cmd = browsers.at(ui->comboBoxBrowser->currentIndex()).mCmd;
     command(cmd);
 }
 

@@ -55,7 +55,6 @@ protected:
     /// Plussz gombok, min futási idő
     QList<int>          goTimes;
     QButtonGroup      * pButtonGroup;
-    QComboBox         * pSelBrowser;
     QProcess          * pProc;
     QString             procOut;
     QString             lastCommand;
