@@ -10,6 +10,15 @@
     <height>791</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string notr="true">rdpwrp</string>
   </property>
@@ -301,10 +310,10 @@
            <bool>false</bool>
           </property>
           <property name="autoDefault">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="default">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="flat">
            <bool>false</bool>
@@ -359,6 +368,12 @@
             <width>32</width>
             <height>32</height>
            </size>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
+          </property>
+          <property name="default">
+           <bool>false</bool>
           </property>
          </widget>
         </item>

@@ -65,8 +65,8 @@ mainDialog::mainDialog(QWidget *parent) :
     QShortcut *pSc;
     pSc = new QShortcut(QKeySequence(QKeySequence::HelpContents), this);                // F1
     connect(pSc, SIGNAL(activated()), this, SLOT(help()));
-    pSc = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), this);    // Enter
-    connect(pSc, SIGNAL(activated()), this, SLOT(enter()));
+//    pSc = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), this);    // Enter  (not working)
+//    connect(pSc, SIGNAL(activated()), this, SLOT(enter()));
 }
 
 mainDialog::~mainDialog()
@@ -122,8 +122,12 @@ void mainDialog::set()
     trHuPath += "_hu.qm";
     trEnPath += "_en.qm";
 
-    if(m_translatorQt.load("qt_hu.qm")) qApp->installTranslator(&m_translatorQt);
-    if(m_translator.  load(trHuPath))   qApp->installTranslator(&m_translatorQt);
+    switch (actLang) {
+    case AL_HU: setHu();    break;
+    case AL_EN: setEn();    break;
+    default:
+        critical(trUtf8("Kritikus program adat hiba."));
+    }
 
     ui->domainCB->clear();
     ui->domainCB->addItems(domains);
@@ -314,7 +318,13 @@ void    mainDialog::go(int id)
 void    mainDialog::chgUsrOrPw(QString)
 {
     DS << __PRETTY_FUNCTION__ << endl;
-    ui->logOnPB->setDisabled(ui->userLE->text().isEmpty() || ui->passwordLE->text().isEmpty());
+    bool br = ui->userLE->text().isEmpty() || ui->passwordLE->text().isEmpty();
+    ui->logOnPB->setDisabled(br);
+    /*
+    ui->logOnPB->setAutoDefault(!br);
+    ui->logOnPB->setDefault(!br);
+    ui->browserPB->setAutoDefault(br);
+    ui->browserPB->setDefault(br); */
 }
 
 void    mainDialog::selDomain(int ix)
