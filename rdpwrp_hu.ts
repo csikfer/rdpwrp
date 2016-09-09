@@ -4,117 +4,117 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.ui" line="147"/>
+        <location filename="mainwindow.ui" line="156"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Magyar nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv a Magyar.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#fe0000;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="167"/>
+        <location filename="mainwindow.ui" line="176"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Angol nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv az Angol.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#ff0000;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="194"/>
+        <location filename="mainwindow.ui" line="203"/>
         <source>Tartomány</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="201"/>
+        <location filename="mainwindow.ui" line="210"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A windows tartomány kiválasztása.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="211"/>
+        <location filename="mainwindow.ui" line="220"/>
         <source>Kiszolgáló</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="218"/>
+        <location filename="mainwindow.ui" line="227"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A terminál szerver kiválasztása a megadott tartományban.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="228"/>
+        <location filename="mainwindow.ui" line="237"/>
         <source>Felhasználó</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="235"/>
+        <location filename="mainwindow.ui" line="244"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A bejelentkezési név a megadott tartományban.&lt;/p&gt;&lt;p&gt;Ha egy másik tartományban aktív felhasználói névvel akarunk bejelentkezni a terminál szerverre, akkor itt megadhatjuk a tartományt a :&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;tartomány&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;\&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;felhasználó&amp;gt;&lt;/span&gt; alakban.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="254"/>
+        <location filename="mainwindow.ui" line="263"/>
         <source>Jelszó</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="261"/>
+        <location filename="mainwindow.ui" line="270"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A megadott felhasználóhoz tartozó jelszó.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Úgyeljünk rá, hogy a kiválasztott nyelv alapján változik a billentyű kiosztás!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="285"/>
+        <location filename="mainwindow.ui" line="294"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Belépés a Windows terminál szerverre. A gomb csak akkor aktív, ha megadtuk a bejelentkezési nevet. és a jelszót is.&lt;/p&gt;&lt;p&gt;Vegyük figyelembe, hogy többszöri hibás jelszó után a szerver letilthatja egy időre a felhasználó belépését.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="288"/>
+        <location filename="mainwindow.ui" line="297"/>
         <source>Belépés a terminál szerverre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="326"/>
+        <location filename="mainwindow.ui" line="335"/>
         <source>Böngésző :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="333"/>
+        <location filename="mainwindow.ui" line="342"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Böngésző kiválasztása, ha több böngésző is rendelkezésre áll.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="348"/>
+        <location filename="mainwindow.ui" line="357"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A kiválasztott böngésző elindítása, a windows domain-ba való bejelentkezés nélkül.&lt;/p&gt;&lt;p&gt;A böngésző (ill. a teljes felhasználói környezet) minden egyes meleg vagy hideg start után alaphelyzetbe áll, minden jelszót vagy sütit elfelejt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="351"/>
+        <location filename="mainwindow.ui" line="360"/>
         <source>Böngésző indítása</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="401"/>
+        <location filename="mainwindow.ui" line="416"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A kliens gép kikapcsolása.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="404"/>
+        <location filename="mainwindow.ui" line="419"/>
         <source>Kikapcsol</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="421"/>
+        <location filename="mainwindow.ui" line="436"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A kliens gép újraindítása.  A kliens gépen minden változtatás, és adat törlődik.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="424"/>
+        <location filename="mainwindow.ui" line="439"/>
         <source>Újraindít</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="441"/>
+        <location filename="mainwindow.ui" line="456"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Az ideiglenes felhasználói környezet eldobása, és ujra létrehozása.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="444"/>
+        <location filename="mainwindow.ui" line="459"/>
         <source>Meleg start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="461"/>
+        <location filename="mainwindow.ui" line="476"/>
         <source>Segítség</source>
         <translation type="unfinished"></translation>
     </message>
@@ -341,86 +341,91 @@ megnyomhatja az ESC gombot is.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="138"/>
+        <location filename="dialog.cpp" line="129"/>
+        <source>Kritikus program adat hiba.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialog.cpp" line="142"/>
         <source>nincs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="338"/>
-        <location filename="dialog.cpp" line="450"/>
+        <location filename="dialog.cpp" line="348"/>
+        <location filename="dialog.cpp" line="460"/>
         <source>Program hiba : %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="384"/>
+        <location filename="dialog.cpp" line="394"/>
         <source>&lt;h1&gt;Parancs, vagy parancs idítási hiba&lt;/h1&gt;
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="386"/>
+        <location filename="dialog.cpp" line="396"/>
         <source>A program idítása nem lehetséges.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="387"/>
+        <location filename="dialog.cpp" line="397"/>
         <source>A program összeomlott.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="388"/>
+        <location filename="dialog.cpp" line="398"/>
         <source>Idő tullépés.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="389"/>
+        <location filename="dialog.cpp" line="399"/>
         <source>Program írási hiba.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="390"/>
+        <location filename="dialog.cpp" line="400"/>
         <source>Program olvasási hiba.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="392"/>
+        <location filename="dialog.cpp" line="402"/>
         <source>Ismeretlen hiba.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="394"/>
+        <location filename="dialog.cpp" line="404"/>
         <source>&lt;h2&gt;Parancs sor:&lt;/h2&gt;
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="397"/>
-        <location filename="dialog.cpp" line="421"/>
+        <location filename="dialog.cpp" line="407"/>
+        <location filename="dialog.cpp" line="431"/>
         <source>&lt;h2&gt;A programnak nem volt kimenete.&lt;/h2&gt;
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="400"/>
-        <location filename="dialog.cpp" line="424"/>
+        <location filename="dialog.cpp" line="410"/>
+        <location filename="dialog.cpp" line="434"/>
         <source>&lt;h2&gt;A program kimenete:&lt;/h2&gt;
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="418"/>
+        <location filename="dialog.cpp" line="428"/>
         <source>&lt;h1&gt;A parancs futási ideje gyanús. Hiba történt?&lt;/h1&gt;
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.cpp" line="419"/>
+        <location filename="dialog.cpp" line="429"/>
         <source>&lt;h2&gt;Kilépési kód : %1</source>
         <translation type="unfinished"></translation>
     </message>
