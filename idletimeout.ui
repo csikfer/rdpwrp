@@ -117,14 +117,14 @@
      <item>
       <widget class="QPushButton" name="contPB">
        <property name="text">
-        <string notr="true">tovább</string>
+        <string>tovább</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="endPB">
        <property name="text">
-        <string notr="true">vége</string>
+        <string>vége</string>
        </property>
       </widget>
      </item>

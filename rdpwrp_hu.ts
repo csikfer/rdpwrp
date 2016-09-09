@@ -332,6 +332,16 @@ megnyomhatja az ESC gombot is.</source>
         <source>down</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="idletimeout.ui" line="120"/>
+        <source>tovább</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="idletimeout.ui" line="127"/>
+        <source>vége</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>mainDialog</name>

@@ -6,117 +6,118 @@
     <message>
         <location filename="mainwindow.ui" line="156"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Magyar nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv a Magyar.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#fe0000;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Switch to Hungarian.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If the button is inactive, then the actual language is Hungarian.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#fe0000;&quot;&gt;When switching to another language, the  keyboard layout changes, and this affects the keyboard layout used  in the terminal client or in the browser!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="176"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Angol nyelvre váltás.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ha a gomb inaktív, akkor az aktuálisan kiválasztott nyelv az Angol.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#ff0000;&quot;&gt;Nyelv váltáskor a billentyűzet kiosztás is megváltozik, és ez hatással van a terminál kliens vagy böngészőben használlt billentyű kiosztásra is!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Switch to English.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If the button is inactive, then the actual language is English.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#fe0000;&quot;&gt;When switching to another language, the  keyboard layout changes, and this affects the keyboard layout used  in the terminal client or in the browser!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="203"/>
         <source>Tartomány</source>
-        <translation type="unfinished">Domain</translation>
+        <translation>Domain</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="210"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A windows tartomány kiválasztása.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting the Windows domain.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="220"/>
         <source>Kiszolgáló</source>
-        <translation type="unfinished">Server</translation>
+        <translatorcomment>Server</translatorcomment>
+        <translation>Server</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="227"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A terminál szerver kiválasztása a megadott tartományban.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choosing the terminal server in the given domain.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="237"/>
         <source>Felhasználó</source>
-        <translation type="unfinished">Account name</translation>
+        <translation>Account name</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="244"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A bejelentkezési név a megadott tartományban.&lt;/p&gt;&lt;p&gt;Ha egy másik tartományban aktív felhasználói névvel akarunk bejelentkezni a terminál szerverre, akkor itt megadhatjuk a tartományt a :&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;tartomány&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;\&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;felhasználó&amp;gt;&lt;/span&gt; alakban.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Log-in name in the given domain.&lt;/p&gt;&lt;p&gt;If you want to log in the terminal server in another domain with an active user name, than you can type in the user domain. :&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;domain&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;\&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;user&amp;gt;&lt;/span&gt; in the following format&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="263"/>
         <source>Jelszó</source>
-        <translation type="unfinished">Password</translation>
+        <translation>Password</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="270"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A megadott felhasználóhoz tartozó jelszó.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Úgyeljünk rá, hogy a kiválasztott nyelv alapján változik a billentyű kiosztás!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;User password&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Please note that the keyboard layout will change based on the language.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="294"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Belépés a Windows terminál szerverre. A gomb csak akkor aktív, ha megadtuk a bejelentkezési nevet. és a jelszót is.&lt;/p&gt;&lt;p&gt;Vegyük figyelembe, hogy többszöri hibás jelszó után a szerver letilthatja egy időre a felhasználó belépését.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Loging in  the Windows terminal server. The button will be activated after entering the user name and the password.&lt;/p&gt;&lt;p&gt;Please note that if you enter the wrong password five times, the server will ban the user for 15 minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="297"/>
         <source>Belépés a terminál szerverre</source>
-        <translation type="unfinished">Logon to the terminal server</translation>
+        <translation>Logon to the terminal server</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="335"/>
         <source>Böngésző :</source>
-        <translation type="unfinished">Select Browser</translation>
+        <translation>Selecting the browser :</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="342"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Böngésző kiválasztása, ha több böngésző is rendelkezésre áll.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting the browser if more than browser is available.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="357"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A kiválasztott böngésző elindítása, a windows domain-ba való bejelentkezés nélkül.&lt;/p&gt;&lt;p&gt;A böngésző (ill. a teljes felhasználói környezet) minden egyes meleg vagy hideg start után alaphelyzetbe áll, minden jelszót vagy sütit elfelejt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Starting the selected browser without loging on to the Windows domain.&lt;/p&gt;&lt;p&gt;The browser (or  the full user environment) after each hot or cold  start will return to default, and all passwords and cookies will be lost..&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="360"/>
         <source>Böngésző indítása</source>
-        <translation type="unfinished">Starting the browser</translation>
+        <translation>Starting the browser</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="416"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A kliens gép kikapcsolása.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switching off the client computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="419"/>
         <source>Kikapcsol</source>
-        <translation type="unfinished">Power off</translation>
+        <translation>Power off</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="436"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A kliens gép újraindítása.  A kliens gépen minden változtatás, és adat törlődik.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Restarting the clien computer.  All the changes and data will be lost.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="439"/>
         <source>Újraindít</source>
-        <translation type="unfinished">Cold start</translation>
+        <translation>Cold start</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="456"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Az ideiglenes felhasználói környezet eldobása, és ujra létrehozása.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Deleting  and recreating the temporary user environment.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="459"/>
         <source>Meleg start</source>
-        <translation type="unfinished">Warm start</translation>
+        <translation>Warm start</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="476"/>
         <source>Segítség</source>
-        <translation type="unfinished">Help</translation>
+        <translation>Help</translation>
     </message>
 </context>
 <context>
@@ -275,7 +276,7 @@ A %2 sor %3 oszlopában
     <message>
         <location filename="idletimeout.cpp" line="14"/>
         <source>Az alkalmazás auomatikusan ki fog lépni</source>
-        <translation type="unfinished"></translation>
+        <translation>The application will automatically close.</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="15"/>
@@ -283,23 +284,26 @@ A %2 sor %3 oszlopában
 
 Ha nem szertné, hogy a kilépjen,
 megnyomhatja az ESC gombot is.</source>
-        <translation type="unfinished"></translation>
+        <translation>after ... seconds.
+
+If you don want it to close ,
+press  ESC.</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="16"/>
         <location filename="idletimeout.cpp" line="23"/>
         <source>Ne!</source>
-        <translation type="unfinished"></translation>
+        <translation>Don&apos;t</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="17"/>
         <source>Kilépés.</source>
-        <translation type="unfinished"></translation>
+        <translation>Close</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="21"/>
         <source>A terminál auomatikusan ki fog kapcsolni</source>
-        <translation type="unfinished"></translation>
+        <translation>The terminal will switch off automatically </translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="22"/>
@@ -307,12 +311,15 @@ megnyomhatja az ESC gombot is.</source>
 
 Ha nem szertné, hogy kikapcsoljon a terminál,
 megnyomhatja az ESC gombot is.</source>
-        <translation type="unfinished"></translation>
+        <translation>after ... seconds.
+
+If you don want it to close ,
+press  ESC.</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="24"/>
         <source>Kikapcsolás!</source>
-        <translation type="unfinished"></translation>
+        <translation>Switch off</translation>
     </message>
 </context>
 <context>
@@ -331,6 +338,16 @@ megnyomhatja az ESC gombot is.</source>
         <location filename="idletimeout.ui" line="85"/>
         <source>down</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="idletimeout.ui" line="120"/>
+        <source>tovább</source>
+        <translation type="unfinished">Continue</translation>
+    </message>
+    <message>
+        <location filename="idletimeout.ui" line="127"/>
+        <source>vége</source>
+        <translation type="unfinished">Close</translation>
     </message>
 </context>
 <context>
@@ -378,7 +395,7 @@ megnyomhatja az ESC gombot is.</source>
         <location filename="dialog.cpp" line="398"/>
         <source>Idő tullépés.
 </source>
-        <translation>Time out</translation>
+        <translation>Time out.</translation>
     </message>
     <message>
         <location filename="dialog.cpp" line="399"/>
