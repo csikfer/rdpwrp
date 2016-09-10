@@ -125,75 +125,77 @@
     <message>
         <location filename="control.cpp" line="16"/>
         <source>Hiba a UDPSocket bint(%1, %2) hívásban : %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Error in UDPSocket bint(%1, %2) call : %3</translation>
     </message>
     <message>
         <location filename="control.cpp" line="55"/>
         <source>E:%1
 A %2 sor %3 oszlopában
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Error in %1 the %2 line %3 column</translation>
     </message>
     <message>
         <location filename="control.cpp" line="59"/>
         <source>A hibás szöveg sor : </source>
-        <translation type="unfinished"></translation>
+        <translation>The wrong text :</translation>
     </message>
     <message>
         <location filename="idletime.cpp" line="21"/>
         <source>Az &quot;%1&quot; program idítása sikertelen.</source>
-        <translation type="unfinished"></translation>
+        <translation>The unsuccessful launch the &quot;%1&quot; program.</translation>
     </message>
     <message>
         <location filename="idletime.cpp" line="31"/>
         <source>&quot;%1&quot; program időtullépés?</source>
-        <translation type="unfinished">&quot;%1&quot; program time out?</translation>
+        <translatorcomment>&quot;%1&quot; program time out ?</translatorcomment>
+        <translation>&quot;%1&quot; program time out?</translation>
     </message>
     <message>
         <location filename="idletime.cpp" line="38"/>
         <source>xprintidle program Kimenete nem értelmezhető:&lt;br&gt;&lt;i&gt;
 </source>
-        <translation type="unfinished"></translation>
+        <translation>xprintidle program outputs can not be interpreted as:&lt;br&gt;&lt;i&gt;
+</translation>
     </message>
     <message>
         <location filename="idletime.cpp" line="60"/>
         <source>Nincs DISPLAY környezeti változó!</source>
-        <translation type="unfinished"></translation>
+        <translation>There is no DISPLAY environment variable!</translation>
     </message>
     <message>
         <location filename="idletime.cpp" line="67"/>
         <source>A DISPLAY környezeti vátozó értéke nem értelmezhető : &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>The DISPLAY environment variable is not interpreted as: &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="idletime.cpp" line="92"/>
         <source>Program hiba.</source>
-        <translation type="unfinished"></translation>
+        <translation>Program error.</translation>
     </message>
     <message>
         <location filename="main.cpp" line="48"/>
         <source>Hiányos argumentum lista.</source>
-        <translation type="unfinished"></translation>
+        <translation>Missing argument.</translation>
     </message>
     <message>
         <location filename="main.cpp" line="57"/>
         <source>Nem numerikus argumentum : &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>No numeric argument: &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="main.cpp" line="81"/>
         <source>Nem állapítható meg a saját gép ip címe</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to determine their computer&apos;s IP address</translation>
     </message>
     <message>
         <location filename="main.cpp" line="87"/>
         <source>A megadott saját cím értelmezhetetlen : %1</source>
-        <translation type="unfinished"></translation>
+        <translation>The given its garbage address : %1</translation>
     </message>
     <message>
         <location filename="main.cpp" line="99"/>
         <source>&lt;br&gt;Kérem forduljon a rendszergazdához!</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt; Please contact your system administrator!</translation>
     </message>
     <message>
         <location filename="main.cpp" line="100"/>
@@ -303,7 +305,7 @@ press  ESC.</translation>
     <message>
         <location filename="idletimeout.cpp" line="21"/>
         <source>A terminál auomatikusan ki fog kapcsolni</source>
-        <translation>The terminal will switch off automatically </translation>
+        <translation type="unfinished">The terminal will switch off automatically after</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="22"/>
@@ -311,7 +313,7 @@ press  ESC.</translation>
 
 Ha nem szertné, hogy kikapcsoljon a terminál,
 megnyomhatja az ESC gombot is.</source>
-        <translation>after ... seconds.
+        <translation type="unfinished"> seconds.
 
 If you don want it to close ,
 press  ESC.</translation>
@@ -355,12 +357,12 @@ press  ESC.</translation>
     <message>
         <location filename="dialog.cpp" line="46"/>
         <source>Automatikus kikapcsolás : </source>
-        <translation type="unfinished"></translation>
+        <translation>Auto Power off : </translation>
     </message>
     <message>
         <location filename="dialog.cpp" line="129"/>
         <source>Kritikus program adat hiba.</source>
-        <translation type="unfinished"></translation>
+        <translation>Critical program data errors.</translation>
     </message>
     <message>
         <location filename="dialog.cpp" line="142"/>
@@ -414,7 +416,7 @@ press  ESC.</translation>
         <location filename="dialog.cpp" line="402"/>
         <source>Ismeretlen hiba.
 </source>
-        <translation>Unknown error</translation>
+        <translation>Unknown error.</translation>
     </message>
     <message>
         <location filename="dialog.cpp" line="404"/>
