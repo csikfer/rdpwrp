@@ -31,7 +31,7 @@ QString getKernelParamValue(const QString& name, const QString& def)
         foreach (QString par, params.split(QChar(' '), QString::KeepEmptyParts)) {
             QStringList nv = par.split(QChar('='));
             if (nv.size() == 2 && nv.at(0) == name) {
-                DS << "Find pernel param : " << par << endl;
+                DS << "Find kernel param : " << par << endl;
                 return nv.at(1);
             }
         }
@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
     // A -c pakcsoló fellülbírálja !
     QString confName = getKernelParamValue(STR(APPNAME), STR(APPNAME) ".conf");
     QString tftpName;
+    bool confByAddress = false;
     int n = QApplication::arguments().size();
     // Program kapcsolók
     for (int i = 0; i < n; ++i) {
@@ -140,6 +141,7 @@ int main(int argc, char *argv[])
         else if (arg == "-6") ipProto = QAbstractSocket::IPv6Protocol;  // csak IPV6 használata (ha nincs -l)
         else if (arg == "-p") cmdPort = nextArgUInt(i);                 // UDP parancs port száma
         else if (arg == "-F") mainIsFullScreen = false;                 // Nem full screen / test
+        else if (arg == "-a") confByAddress = true;                     // Konfig keresése a cím alapján (csak ha van -t is és IPV4 a cím)
     }
 
     setLocalAddr();
@@ -154,8 +156,24 @@ int main(int argc, char *argv[])
         QTFtpClient tftp(tftpName);
         if (!tftp) critical(tftp.lastError());
         pInArray = new QByteArray;
-        if (!tftp.getByteArray(confName, pInArray)) critical(tftp.lastError());
-        pIn = new QBuffer(pInArray);
+        if (confByAddress && localAddr.protocol() == QAbstractSocket::IPv4Protocol) {
+            quint32 a = localAddr.toIPv4Address();
+            for (quint32 m = 0xfffffff0; m > 0xffff0000; m <<= 1) {
+                quint32 am = a & m;
+                QString constNameByAddress = QHostAddress(am).toString() + ".conf";
+                pInArray->clear();
+                if (tftp.getByteArray(constNameByAddress, pInArray)) {
+                    pIn = new QBuffer(pInArray);
+                    break;
+                }
+            }
+
+        }
+        if (pIn == NULL) {
+            pInArray->clear();
+            if (!tftp.getByteArray(confName, pInArray)) critical(tftp.lastError());
+            pIn = new QBuffer(pInArray);
+        }
     }
     if (!pIn->open(QIODevice::ReadOnly)) {
         critical(QObject::trUtf8("A konfigurációs fájl %1, nem olvasható, vagy nem létezik.").arg(confName));
