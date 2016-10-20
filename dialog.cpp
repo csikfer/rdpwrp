@@ -250,7 +250,7 @@ void    mainDialog::logOn()
     }
     QString cmd = rdpcmd;
     // Alternatív parancs
-    QString altCmd = rdpCmds.at(ui->serverCB->currentIndex()).at(ui->serverCB->currentIndex());
+    QString altCmd = rdpCmds.at(ui->domainCB->currentIndex()).at(ui->serverCB->currentIndex());
     if (altCmd.isEmpty() == false) cmd = altCmd;
     cmd = cmd.arg(
                 dom,
