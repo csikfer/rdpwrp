@@ -200,17 +200,17 @@ A %2 sor %3 oszlopában
     <message>
         <location filename="main.cpp" line="100"/>
         <source>Végzetes hiba!</source>
-        <translation type="unfinished"></translation>
+        <translation>Critical error</translation>
     </message>
     <message>
         <location filename="main.cpp" line="101"/>
         <source>Figyelmeztetés</source>
-        <translation type="unfinished">Warning</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="main.cpp" line="113"/>
         <source>Ismeretlen</source>
-        <translation type="unfinished"></translation>
+        <translation>Unknown</translation>
     </message>
     <message>
         <location filename="main.cpp" line="161"/>
@@ -278,7 +278,7 @@ A %2 sor %3 oszlopában
     <message>
         <location filename="idletimeout.cpp" line="14"/>
         <source>Az alkalmazás auomatikusan ki fog lépni</source>
-        <translation>The application will automatically close.</translation>
+        <translation>The application will automatically close</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="15"/>
@@ -295,17 +295,17 @@ press  ESC.</translation>
         <location filename="idletimeout.cpp" line="16"/>
         <location filename="idletimeout.cpp" line="23"/>
         <source>Ne!</source>
-        <translation>Don&apos;t</translation>
+        <translation>Don&apos;t!</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="17"/>
         <source>Kilépés.</source>
-        <translation>Close</translation>
+        <translation>Close.</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="21"/>
         <source>A terminál auomatikusan ki fog kapcsolni</source>
-        <translation type="unfinished">The terminal will switch off automatically after</translation>
+        <translation>The terminal will switch off automatically after</translation>
     </message>
     <message>
         <location filename="idletimeout.cpp" line="22"/>
@@ -313,7 +313,7 @@ press  ESC.</translation>
 
 Ha nem szertné, hogy kikapcsoljon a terminál,
 megnyomhatja az ESC gombot is.</source>
-        <translation type="unfinished"> seconds.
+        <translation> seconds.
 
 If you don want it to close ,
 press  ESC.</translation>
@@ -329,7 +329,7 @@ press  ESC.</translation>
     <message>
         <location filename="idletimeout.ui" line="20"/>
         <source>Figyelmeztetés</source>
-        <translation type="unfinished">Warning</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="idletimeout.ui" line="60"/>
@@ -349,7 +349,7 @@ press  ESC.</translation>
     <message>
         <location filename="idletimeout.ui" line="127"/>
         <source>vége</source>
-        <translation type="unfinished">Close</translation>
+        <translation>End</translation>
     </message>
 </context>
 <context>
